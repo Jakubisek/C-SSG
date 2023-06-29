@@ -23,7 +23,7 @@ int fill_grid(grid_t grid, char const *data)
         c = data[counter++];
         if ((c <= '/' && c >= ',') || c == ' ') continue;
         if (index >= 81 && c != '\0') {
-            fprintf(stderr, "Input contains redundatnt data that will be ignored\n");
+            fprintf(stderr, "Input contains redundant data that will be ignored\n");
             return 82;
         }
         if (c < '0' || c > '9') return index;
@@ -32,9 +32,13 @@ int fill_grid(grid_t grid, char const *data)
     return counter;
 }
 
-void get_part(grid_t grid, tile_t **part, enum part_type, unsigned long index)
+void get_part(grid_t grid, tile_t **part, enum part_type type, size_t index)
 {
-
+    for (size_t i = 0; i < 9; i++) {
+        if (type == PART_SQUARE) part[i] = &(grid[27*(index / 3) + 3*(index % 3) + (i % 3) + 9*(i / 3)]);
+        if (type == PART_ROW) part[i] = &(grid[9*index + i]);
+        if (type == PART_COLUMN) part[i] = &(grid[9*i + index]);
+    }
 }
 
 size_t part_has_tile(grid_t grid, tile_t tile)
@@ -56,7 +60,8 @@ char tile_as_char(tile_t tile) {
     return '!';
 }
 
-void show_grid(grid_t grid) {
+void show_grid(grid_t grid)
+{
     printf("+---+---+---+ +---+---+---+ +---+---+---+\n");
     for (size_t i = 0; i < 9; i++) {
         for (size_t j = 0; j < 9; j++) {

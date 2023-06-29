@@ -20,11 +20,11 @@ typedef tile_t* grid_t;
 
 int fill_grid(grid_t grid, char const *data);
 
-void get_part(grid_t grid, tile_t **part, enum part_type, unsigned long index);
+void get_part(grid_t grid, tile_t **part, enum part_type, size_t index);
 
 size_t part_has_tile(grid_t grid, tile_t tile);
 
-size_t update_all(grid_t grid, unsigned long x, unsigned long y);
+size_t update_all(grid_t grid, size_t x, size_t y);
 
 char tile_as_char(tile_t tile);
 
