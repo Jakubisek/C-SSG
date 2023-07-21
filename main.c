@@ -4,18 +4,34 @@
 
 int main(int argc, char const *argv[])
 {
-    tile_t empty_tile = TILE_EMPTY;
-    tile_t five_tile = char_to_tile('5');
+    tile_t tiles[9] = {
+        char_to_tile('1'),
+        TILE_EMPTY,
+        char_to_tile('3'),
+        char_to_tile('4'),
+        TILE_EMPTY,
+        char_to_tile('6'),
+        char_to_tile('7'),
+        char_to_tile('8'),
+        TILE_EMPTY
+    };
 
-    show_tile(empty_tile);
-    show_tile(five_tile);
+    show_tile(tiles[4]);
+    update_tile(tiles, 9, &tiles[1]);
+    update_tile(tiles, 9, &tiles[4]);
+    update_tile(tiles, 9, &tiles[8]);
 
-    if (tile_is_solved(five_tile)) {
-        remove_from_tile(&empty_tile, five_tile);
-        printf("After removing five from empty:\n");
-        putchar(tile_to_char(empty_tile)); putchar(' ');
-        show_tile(empty_tile);
-    }
+    show_tile(tiles[4]);
+
+    remove_from_tile(&tiles[1], char_to_tile('5'));
+    remove_from_tile(&tiles[8], char_to_tile('5'));
+
+    show_tile(tiles[4]);
+
+    update_if_unique(tiles, 9);
+
+    // 5 should be solved
+    show_tile(tiles[4]);
 
     return EXIT_SUCCESS;
 }

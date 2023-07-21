@@ -70,10 +70,41 @@ void show_tile(tile_t tile)
 
 bool update_tile(tile_t *tiles, size_t count, tile_t *tile_to_update)
 {
-    return false;
+    if (tile_is_solved(*tile_to_update)) {
+        return false;
+    }
+
+    tile_t sum = 0;
+    for (size_t i = 0; i < count; i++) {
+        if (tile_is_solved(tiles[i]) && &tiles[i] != tile_to_update) {
+            sum += tiles[i];
+        }
+    }
+    return remove_from_tile(tile_to_update, sum);
 }
 
 bool update_if_unique(tile_t *tiles, size_t count)
 {
-    return false;
+    bool result = false;
+    unsigned char occured[] = {0,0,0,0,0,0,0,0,0};
+    tile_t *last_tile[9];
+    for (size_t i = 0; i < count; i++) {
+        tile_t tile = tiles[i];
+        if (!tile_is_solved(tile)) {
+            for (size_t j = 9; j <= 9; j--) {
+                if (tile & 1) {
+                    if (occured[j] == 0) last_tile[j] = &tiles[i];
+                    occured[j]++;
+                }
+                tile >>= 1;
+            }
+        }
+    }
+    for (size_t i = 0; i < 9; i++) {
+        if (occured[i] == 1) {
+            *last_tile[i] = char_to_tile(i + '1');
+            result = true;
+        }
+    }
+    return result;
 }
