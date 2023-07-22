@@ -38,7 +38,7 @@ tile_t char_to_tile(char num);
 bool tile_is_solved(tile_t tile);
 
 /*
-    Checks if a tile contains an element (num)
+    Checks if a tile contains `num`
     @warning ingores the sum of both parameters
 
     @returns true if `num` is a subset of `tile`, false otherwise
@@ -69,6 +69,7 @@ bool update_tile(tile_t *tiles, size_t count, tile_t *tile_to_update);
 /*
     Updates all the tiles from `tiles` that contain a unique value
     @returns false if no tiles are updated, true otherwise
+    @attention if a situation occurs where multiple values are unique, the largest will be chosen
 */
 bool update_if_unique(tile_t *tiles, size_t count);
 
