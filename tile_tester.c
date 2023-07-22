@@ -1,9 +1,6 @@
 #include "tile.h"
 #include "string.h"
 
-/*
-    this could be bearly considered to work
-*/
 
 int main(int argc, char const *argv[])
 {
@@ -12,7 +9,7 @@ int main(int argc, char const *argv[])
     }
     
     size_t size = strlen(argv[1]);
-    tile_t tiles[100];
+    tile_t tiles[size];
     tile_t *tested_tile = NULL;
 
     for (size_t i = 0; i < size; i++) {
@@ -28,7 +25,7 @@ int main(int argc, char const *argv[])
             update_tile(tiles, size, &tiles[i]);
         }
     }
-    // update_if_unique(tiles, size); -- FIX MAY CAUSE STACK SMASHING
+    update_if_unique(tiles, size);
 
     tile_t expected_result = 0;
     for (size_t i = 0; i < strlen(argv[2]); i++) {
