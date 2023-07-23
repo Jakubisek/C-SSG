@@ -4,34 +4,14 @@
 
 int main(int argc, char const *argv[])
 {
-    tile_t tiles[9] = {
-        char_to_tile('1'),
-        TILE_EMPTY,
-        char_to_tile('3'),
-        char_to_tile('4'),
-        TILE_EMPTY,
-        char_to_tile('6'),
-        char_to_tile('7'),
-        char_to_tile('8'),
-        TILE_EMPTY
-    };
+    tile_t grid[81];
+    int filled = fill_grid(grid, argv[1]);
+    printf("---\nLoaded %d numbers into grid\n\n", filled);
+    show_grid(grid);
 
-    show_tile(tiles[4]);
-    update_tile(tiles, 9, &tiles[1]);
-    update_tile(tiles, 9, &tiles[4]);
-    update_tile(tiles, 9, &tiles[8]);
-
-    show_tile(tiles[4]);
-
-    remove_from_tile(&tiles[1], char_to_tile('5'));
-    remove_from_tile(&tiles[8], char_to_tile('5'));
-
-    show_tile(tiles[4]);
-
-    update_if_unique(tiles, 9);
-
-    // 5 should be solved
-    show_tile(tiles[4]);
-
+    for (size_t i = 0; i < 81; i++) {
+        update_position(grid, i);
+    }
+    
     return EXIT_SUCCESS;
 }

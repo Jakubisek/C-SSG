@@ -7,7 +7,7 @@ typedef tile_t* grid_t;
 
 int fill_grid(grid_t grid, char const *data);
 
-void get_square(grid_t grid, tile_t **part, size_t index);
+bool update_position(grid_t grid, size_t index);
 
 void show_grid(grid_t grid);
 
