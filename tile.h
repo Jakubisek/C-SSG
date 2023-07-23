@@ -63,7 +63,7 @@ bool remove_from_tile(tile_t *tile, tile_t tile_to_remove);
     Updates `tile_to_update` by removing all the values which are solved in `tile`
     @returns false if operation does not change the value of `tile_to_update`, true otherwise
     @attention since remove_from_tile() is used, sum might be updated during this operaiton
-    @warning including `tile_to_update` in `tiles` will cause this tile to be ignored
+    @warning including `tile_to_update` in `tiles` will cause this tile to be ignored only if they have the same adress
 */
 bool update_tile(tile_t *tiles, size_t count, tile_t *tile_to_update);
 
