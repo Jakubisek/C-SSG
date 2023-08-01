@@ -78,6 +78,11 @@ bool update_tile(tile_t *tiles, size_t count, tile_t *tile_to_update)
     for (size_t i = 0; i < count; i++) {
         if (tile_is_solved(tiles[i]) && &tiles[i] != tile_to_update) {
             sum |= tiles[i];
+            #ifdef DEBUG_MSG
+                show_tile(*tile_to_update);
+                printf("updated with ");
+                show_tile(sum);
+            #endif
         }
     }
     return remove_from_tile(tile_to_update, sum);
