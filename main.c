@@ -12,6 +12,9 @@ int main(int argc, char const *argv[])
     for (size_t i = 0; i < 81; i++) {
         update_position(grid, i);
     }
-    
+
+    printf("---\nDone\n\n");
+    show_grid(grid);
+
     return EXIT_SUCCESS;
 }

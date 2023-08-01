@@ -2,23 +2,32 @@
 #include "grid.h"
 
 
-// THIS WILL INF LOOP
 void get_square(grid_t grid, tile_t *part, size_t index) {
     size_t i = 0;
-    while (i < 8) {
+    size_t counter = 0;
+    while (i < 9 && counter < 8) {
         size_t pos = 27*(index / 3) + 3*(index % 3) + (i % 3) + 9*(i / 3);
-        if (pos == index) continue;
-        part[i++] = grid[pos];
+        if (pos == index) {
+            i++;
+            continue;
+        }
+        part[counter++] = grid[pos];
+        i++;
     }
 }
 
 void get_line(grid_t grid, tile_t *part, size_t index, bool is_row) {
     size_t const start = is_row ? (index % 9) : index - (index % 9);
+    size_t counter = 0;
     size_t i = 0;
-    while (i < 8) {
+    while (i < 9 && counter < 8) {
         size_t pos = is_row ? start + i : start + 9*i;
-        if (pos == index) continue;
-        part[i++] = grid[pos];
+        if (pos == index) {
+            i++;
+            continue;
+        }
+        part[counter++] = grid[pos];
+        i++;
     }
 }
 
