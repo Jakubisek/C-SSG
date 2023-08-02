@@ -65,7 +65,6 @@ void show_tile(tile_t tile)
         }
         mask >>= 1;
     }
-    putchar('\n');
 }
 
 bool remove_all_solved(tile_t *tiles, size_t count, tile_t *tile_to_update)
@@ -110,6 +109,12 @@ bool solve_if_unique(tile_t *tiles, size_t count)
         if (occured[i] == 1) {
             *last_tile[i] = char_to_tile(i + '1');
             result = true;
+            #ifdef DEBUG_MSG
+                show_tile(*last_tile[i]);
+                printf(" contains unique value ");
+                show_tile(char_to_tile(i + '1'));
+                putchar('\n')
+            #endif
         }
     }
     return result;
