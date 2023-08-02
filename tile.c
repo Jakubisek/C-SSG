@@ -68,7 +68,7 @@ void show_tile(tile_t tile)
     putchar('\n');
 }
 
-bool update_tile(tile_t *tiles, size_t count, tile_t *tile_to_update)
+bool remove_all_solved(tile_t *tiles, size_t count, tile_t *tile_to_update)
 {
     if (tile_is_solved(*tile_to_update)) {
         return false;
@@ -80,15 +80,16 @@ bool update_tile(tile_t *tiles, size_t count, tile_t *tile_to_update)
             sum |= tiles[i];
             #ifdef DEBUG_MSG
                 show_tile(*tile_to_update);
-                printf("updated with ");
+                printf(" updated with ");
                 show_tile(sum);
+                putchar('\n')
             #endif
         }
     }
     return remove_from_tile(tile_to_update, sum);
 }
 
-bool update_if_unique(tile_t *tiles, size_t count)
+bool solve_if_unique(tile_t *tiles, size_t count)
 {
     bool result = false;
     unsigned char occured[] = {0,0,0,0,0,0,0,0,0};

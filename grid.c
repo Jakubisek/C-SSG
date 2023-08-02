@@ -53,7 +53,7 @@ bool update_position(grid_t grid, size_t index)
     get_square(grid, square, index);
 
 
-    return update_tile(row, 8, &grid[index]) || update_tile(column, 8, &grid[index]) || update_tile(square, 8, &grid[index]);
+    return remove_all_solved(row, 8, &grid[index]) || remove_all_solved(column, 8, &grid[index]) || remove_all_solved(square, 8, &grid[index]);
 }
 
 void show_grid(grid_t grid)

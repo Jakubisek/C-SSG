@@ -22,10 +22,10 @@ int main(int argc, char const *argv[])
 
     for (size_t i = 0; i < size; i++) {
         if (!tile_is_solved(tiles[i])) {
-            update_tile(tiles, size, &tiles[i]);
+            remove_all_solved(tiles, size, &tiles[i]);
         }
     }
-    update_if_unique(tiles, size);
+    solve_if_unique(tiles, size);
 
     tile_t expected_result = 0;
     for (size_t i = 0; i < strlen(argv[2]); i++) {

@@ -60,19 +60,19 @@ bool add_to_tile(tile_t *tile, tile_t tile_to_add);
 bool remove_from_tile(tile_t *tile, tile_t tile_to_remove);
 
 /*
-    Updates `tile_to_update` by removing all the values which are solved in `tile`
+    Updates `tile_to_update` by removing all the values from `tiles` which are solved
     @returns false if operation does not change the value of `tile_to_update`, true otherwise
     @attention since remove_from_tile() is used, sum might be updated during this operaiton
     @warning including `tile_to_update` in `tiles` will cause this tile to be ignored only if they have the same adress
 */
-bool update_tile(tile_t *tiles, size_t count, tile_t *tile_to_update);
+bool remove_all_solved(tile_t *tiles, size_t count, tile_t *tile_to_update);
 
 /*
-    Updates all the tiles from `tiles` that contain a unique value
+    Updates (solves) all the tiles from `tiles` that contain a unique value
     @returns false if no tiles are updated, true otherwise
     @attention if a situation occurs where multiple values are unique, the largest will be chosen
 */
-bool update_if_unique(tile_t *tiles, size_t count);
+bool solve_if_unique(tile_t *tiles, size_t count);
 
 /*
     An inverse function to char_to_tile()
