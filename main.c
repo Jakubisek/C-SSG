@@ -16,5 +16,7 @@ int main(int argc, char const *argv[])
     printf("---\nDone\n\n");
     show_grid(grid);
 
+    show_tile(grid[1]); putchar(' ');
+    show_tile(grid[2]); putchar('\n');
     return EXIT_SUCCESS;
 }
