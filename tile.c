@@ -27,18 +27,28 @@ bool tile_has_num(tile_t tile, tile_t num)
     return (~(num & 0x0FFF) | (tile & 0x0FFF)) == num; 
 }
 
-bool add_to_tile(tile_t *tile, tile_t adding)
+bool add_to_tile(tile_t *tile, tile_t tile_to_add)
 {
-    *tile |= (adding & 0x0FFF);
+    #ifdef DEBUG_MSG
+        putchar('\t');
+        show_tile(*tile);
+        printf(" adding ");
+        printf("[%c] ", tile_to_char(tile_to_remove));
+        show_tile(tile_to_add);
+        putchar('\n');
+    #endif
+    *tile |= (tile_to_add & 0x0FFF);
     *tile = recount(*tile) | (*tile & 0x0FFF);
-    return (*tile & 0x0FFF) ^ (adding & 0x0FFF); 
+    return (*tile & 0x0FFF) ^ (tile_to_add & 0x0FFF); 
 }
 
 bool remove_from_tile(tile_t *tile, tile_t tile_to_remove)
 {
     #ifdef DEBUG_MSG
+        putchar('\t');
         show_tile(*tile);
-        printf(" trying to remove ");
+        printf(" removing ");
+        printf("[%c] ", tile_to_char(tile_to_remove));
         show_tile(tile_to_remove);
         putchar('\n');
     #endif
@@ -86,6 +96,7 @@ bool remove_all_solved(tile_t *tiles, size_t count, tile_t *tile_to_update)
         }
     }
     #ifdef DEBUG_MSG
+        putchar('\t');
         show_tile(*tile_to_update);
         printf(" updated with ");
         show_tile(sum);
@@ -116,6 +127,7 @@ bool solve_if_unique(tile_t *tiles, size_t count)
             *last_tile[i] = char_to_tile(i + '1');
             result = true;
             #ifdef DEBUG_MSG
+                putchar('\t');
                 show_tile(*last_tile[i]);
                 printf(" contains unique value ");
                 putchar(i + '1');
