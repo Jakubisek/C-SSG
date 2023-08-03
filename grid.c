@@ -33,7 +33,13 @@ bool update_position(grid_t grid, size_t pos)
     if (tile_is_solved(grid[pos])) return false;
     tile_t before_update = grid[pos];
 
-    size_t row_start = pos / 9;
+    #ifdef DEBUG_MSG
+        printf("--- Started update on (%ld, %ld) ---\nTarget: ", pos / 9, pos % 9);
+        show_tile(grid[pos]);
+        putchar('\n');
+    #endif
+
+    size_t row_start = (pos / 9) * 9;
     for (size_t i = 0; i < 9; i++) {
         size_t current_pos = row_start + i;
         if (current_pos != pos && tile_is_solved(grid[current_pos])) {
@@ -49,11 +55,16 @@ bool update_position(grid_t grid, size_t pos)
         }
     }
 
-    // SQUARE UPDATE IS HARD
-    // size_t square_corner_pos = pos - (pos % 3) - (((pos / 9) % 3) * 9);
-    // for (size_t i = 0; i < 4; i++) {
-    //     remove_from_tile(&grid[pos], grid[square_corner_pos + (18 * (i / 2) + 2 * (i % 2))]);
-    // }
+    // some tiles that were already removed will be (attempted) removed again
+    size_t square_corner_pos = pos - (pos % 3) - (((pos / 9) % 3) * 9);
+    for (size_t i = 0; i < 27; i += 9) {
+        for (size_t j = 0; j < 3; j++) {
+            size_t current_pos = square_corner_pos + i + j;
+            if (current_pos != pos && tile_is_solved(grid[current_pos])) {
+                remove_from_tile(&grid[pos], grid[current_pos]);
+            }
+        }
+    }
 
     return before_update == grid[pos];
 }
