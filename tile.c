@@ -14,17 +14,17 @@ tile_t char_to_tile(char num)
 {
     if (num == '0') return TILE_EMPTY;
     if (num >= '1' && num <= '9') return 0x1000 | (1 << (num - '0' - 1));
-    return (tile_t)0;
+    return TILE_ERROR;
 }
 
 bool tile_is_solved(tile_t tile)
 {
-    return (tile & 0xF000) == 0x1000;
+    return (tile TILE_GET_SUM) == 0x1000;
 }
 
 bool tile_has_num(tile_t tile, tile_t num)
 {
-    return (~(num & 0x0FFF) | (tile & 0x0FFF)) == num; 
+    return (~(num TILE_GET_SET) | (tile TILE_GET_SET)) == num; 
 }
 
 bool add_to_tile(tile_t *tile, tile_t tile_to_add)
@@ -33,45 +33,45 @@ bool add_to_tile(tile_t *tile, tile_t tile_to_add)
         putchar('\t');
         show_tile(*tile);
         printf(" adding ");
-        printf("[%c] ", tile_to_char(tile_to_remove));
+        printf("[%c] ", tile_to_char(tile_to_add));
         show_tile(tile_to_add);
         putchar('\n');
     #endif
-    *tile |= (tile_to_add & 0x0FFF);
-    *tile = recount(*tile) | (*tile & 0x0FFF);
-    return (*tile & 0x0FFF) ^ (tile_to_add & 0x0FFF); 
+    *tile |= (tile_to_add TILE_GET_SET);
+    *tile = recount(*tile) | (*tile TILE_GET_SET);
+    return (*tile TILE_GET_SET) ^ (tile_to_add TILE_GET_SET); // FIX THIS
 }
 
 bool remove_from_tile(tile_t *tile, tile_t tile_to_remove)
 {
+    tile_t before_change = *tile;
     #ifdef DEBUG_MSG
         putchar('\t');
         show_tile(*tile);
-        printf(" removing ");
-        printf("[%c] ", tile_to_char(tile_to_remove));
+        printf(" removing [%c] ", tile_to_char(tile_to_remove));
         show_tile(tile_to_remove);
         putchar('\n');
     #endif
-    *tile &= ~(tile_to_remove & 0x0FFF); 
-    *tile = recount(*tile) | (*tile & 0x0FFF);
-    return (*tile & 0xFFF) & (tile_to_remove & 0xFFF);
+    *tile &= ~(tile_to_remove TILE_GET_SET);
+    *tile = recount(*tile) | (*tile TILE_GET_SET);
+    return (before_change TILE_GET_SET) & (tile_to_remove TILE_GET_SET);
 }
 
 char tile_to_char(tile_t tile)
 {
-    if (!(tile & 0xF000)) return '!';
+    if (tile == TILE_ERROR) return '!';
     if (!tile_is_solved(tile)) return '?';
     
     for (size_t i = 0; i < 9; i++) {
         if (tile & 1) return i + '1';
         tile >>= 1;
     }
-    return '!';
+    return 'X';
 }
 
 void show_tile(tile_t tile)
 {
-    putchar(((tile & 0xF000) >> 12) + '0'); putchar('-');
+    putchar(((tile TILE_GET_SUM) >> 12) + '0'); putchar('-');
     tile_t mask = 0x100;
     for (size_t i = 0; i < 9; i++) {
         if (tile & mask) {
