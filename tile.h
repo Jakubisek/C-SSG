@@ -7,6 +7,7 @@ typedef unsigned long size_t;
 typedef unsigned short tile_t;
 
 #define TILE_EMPTY 0x91FF
+#define TILE_ERROR 0
 
 /*
     tile_t
@@ -22,6 +23,9 @@ typedef unsigned short tile_t;
     1001 0001 1111 1111
     = 0x91FF
 */
+
+#define TILE_GET_SUM &0xF000
+#define TILE_GET_SET &0x01FF
 
 /*
     Converts char into tile_t
@@ -79,7 +83,7 @@ bool solve_if_unique(tile_t *tiles, size_t count);
     @returns
     '?' if the tile is not solved,
     '!' if `tile` contains error,
-    '1' - '9' othrwise
+    '1' - '9' otherwise
 */
 char tile_to_char(tile_t tile);
 
