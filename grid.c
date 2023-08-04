@@ -28,46 +28,56 @@ int fill_grid(grid_t grid, char const *data)
     return 81;
 }
 
-bool update_position(grid_t grid, size_t pos)
-{
-    if (tile_is_solved(grid[pos])) return false;
-    tile_t before_update = grid[pos];
+bool recursive_grid_update(grid_t grid, size_t pos) {
+    bool result = false;
 
     #ifdef DEBUG_MSG
         printf("--- Started update on (%ld, %ld) ---\nTarget: ", pos / 9, pos % 9);
-        show_tile(grid[pos]);
-        putchar('\n');
+        show_tile(grid[pos]); putchar('\n');
     #endif
 
-    size_t row_start = (pos / 9) * 9;
-    for (size_t i = 0; i < 9; i++) {
-        size_t current_pos = row_start + i;
-        if (current_pos != pos && tile_is_solved(grid[current_pos])) {
-            remove_from_tile(&grid[pos], grid[current_pos]);
+    for (size_t is_row = 0; is_row < 2; is_row++)
+    {
+        size_t start = is_row ? (pos / 9) * 9 : pos % 9;
+        for (size_t i = 0; i < 9; i++) {
+            size_t current_pos = is_row ? start + i : start + (9 * i);
+            if (current_pos == pos || tile_is_solved(grid[current_pos])) {
+                continue;
+            }
+            if (remove_from_tile(&grid[current_pos], grid[pos]) && tile_is_solved(grid[current_pos])) {
+                result = true;
+                recursive_grid_update(grid, current_pos);
+            }
         }
     }
-
-    size_t column_start = pos % 9;
-    for (size_t i = 0; i < 9; i++) {
-        size_t current_pos = column_start + (9 * i);
-        if (current_pos != pos && tile_is_solved(grid[current_pos])) {
-            remove_from_tile(&grid[pos], grid[current_pos]);
-        }
-    }
-
-    // some tiles that were already removed will be (attempted) removed again
+    // remove from the 8 square tiles out of which 4 have already been updated
     size_t square_corner_pos = pos - (pos % 3) - (((pos / 9) % 3) * 9);
     for (size_t i = 0; i < 27; i += 9) {
         for (size_t j = 0; j < 3; j++) {
             size_t current_pos = square_corner_pos + i + j;
-            if (current_pos != pos && tile_is_solved(grid[current_pos])) {
-                remove_from_tile(&grid[pos], grid[current_pos]);
+            if (current_pos == pos || tile_is_solved(grid[current_pos])) {
+                continue;
+            }
+            if (remove_from_tile(&grid[current_pos], grid[pos]) && tile_is_solved(grid[current_pos])) {
+                result = true;
+                recursive_grid_update(grid, current_pos);
             }
         }
     }
-
-    return before_update == grid[pos];
+    return result;
 }
+
+
+bool update_grid(grid_t grid) {
+    bool result = false;
+    for (size_t i = 0; i < 81; i++) {
+        if (tile_is_solved(grid[i])) {
+            result |= recursive_grid_update(grid, i);
+        }
+    }
+    return result;
+}
+
 
 const char *const line = "+---+---+---+ +---+---+---+ +---+---+---+\n";
 

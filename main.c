@@ -9,14 +9,12 @@ int main(int argc, char const *argv[])
     printf("---\nLoaded %d numbers into grid\n\n", filled);
     show_grid(grid);
 
-    for (size_t i = 0; i < 81; i++) {
-        update_position(grid, i);
-    }
+    update_grid(grid);
 
     printf("---\nDone\n\n");
     show_grid(grid);
 
-    show_tile(grid[4]); putchar(' ');
-    show_tile(grid[50]); putchar('\n');
+    show_tile(grid[3]); putchar(' ');
+    show_tile(grid[4]); putchar('\n');
     return EXIT_SUCCESS;
 }
