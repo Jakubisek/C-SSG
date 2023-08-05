@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# ./run 531729846496185372278364195367251984845973621912648537754836219689412753123597468
+# ./run 531729846496185372278364195367251984845973621912648537754836219689412753123597468 (solved)
+# ./run 501009800090085072008300005360051000045070020902640007004800019000410703020500460 (1)
 
 
 failed="0"
@@ -17,7 +18,11 @@ tile_test() {
 }
 
 run_tile_tests() {
-    gcc -Wall -o test ../tile.c tile_tester.c
+    gcc -Wall -o test tile.c tests/tile_tests.c
+    ./test
+    echo "ADD / SUB tests done..."
+
+    gcc -Wall -o test tile.c tests/tile_tester.c
     tile_test "wrong should fail" ?23456789 9
     tile_test "basic 9" 12345678? 9
     tile_test "basic 8" 1234567?9 8
