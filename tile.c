@@ -20,6 +20,7 @@ tile_t char_to_tile(char num)
 char tile_to_char(tile_t tile)
 {
     if (tile == TILE_ERROR) return '!';
+    if (tile == TILE_EMPTY) return ' ';
     if (!tile_is_solved(tile)) return '?';
     
     for (size_t i = 0; i < 9; i++) {
