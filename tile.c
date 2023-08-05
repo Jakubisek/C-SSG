@@ -57,6 +57,7 @@ bool tile_has_num(tile_t tile, tile_t num)
 
 bool add_to_tile(tile_t *tile, tile_t tile_to_add)
 {
+    tile_t before_change = *tile;
     #ifdef DEBUG_MSG
         putchar('\t');
         show_tile(*tile);
@@ -67,7 +68,7 @@ bool add_to_tile(tile_t *tile, tile_t tile_to_add)
     #endif
     *tile |= (tile_to_add TILE_GET_SET);
     *tile = recount(*tile) | (*tile TILE_GET_SET);
-    return (*tile TILE_GET_SET) ^ (tile_to_add TILE_GET_SET);
+    return !(before_change == *tile);
 }
 
 
@@ -83,7 +84,7 @@ bool remove_from_tile(tile_t *tile, tile_t tile_to_remove)
     #endif
     *tile &= ~(tile_to_remove TILE_GET_SET);
     *tile = recount(*tile) | (*tile TILE_GET_SET);
-    return (before_change TILE_GET_SET) & (tile_to_remove TILE_GET_SET);
+    return !(before_change == *tile);
 }
 
 
