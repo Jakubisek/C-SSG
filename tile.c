@@ -17,46 +17,6 @@ tile_t char_to_tile(char num)
     return TILE_ERROR;
 }
 
-bool tile_is_solved(tile_t tile)
-{
-    return (tile TILE_GET_SUM) == 0x1000;
-}
-
-bool tile_has_num(tile_t tile, tile_t num)
-{
-    return (~(num TILE_GET_SET) | (tile TILE_GET_SET)) == num; 
-}
-
-bool add_to_tile(tile_t *tile, tile_t tile_to_add)
-{
-    #ifdef DEBUG_MSG
-        putchar('\t');
-        show_tile(*tile);
-        printf(" adding ");
-        printf("[%c] ", tile_to_char(tile_to_add));
-        show_tile(tile_to_add);
-        putchar('\n');
-    #endif
-    *tile |= (tile_to_add TILE_GET_SET);
-    *tile = recount(*tile) | (*tile TILE_GET_SET);
-    return (*tile TILE_GET_SET) ^ (tile_to_add TILE_GET_SET); // FIX THIS
-}
-
-bool remove_from_tile(tile_t *tile, tile_t tile_to_remove)
-{
-    tile_t before_change = *tile;
-    #ifdef DEBUG_MSG
-        putchar('\t');
-        show_tile(*tile);
-        printf(" removing [%c] ", tile_to_char(tile_to_remove));
-        show_tile(tile_to_remove);
-        putchar('\n');
-    #endif
-    *tile &= ~(tile_to_remove TILE_GET_SET);
-    *tile = recount(*tile) | (*tile TILE_GET_SET);
-    return (before_change TILE_GET_SET) & (tile_to_remove TILE_GET_SET);
-}
-
 char tile_to_char(tile_t tile)
 {
     if (tile == TILE_ERROR) return '!';
@@ -83,6 +43,50 @@ void show_tile(tile_t tile)
     }
 }
 
+bool tile_is_solved(tile_t tile)
+{
+    return (tile TILE_GET_SUM) == 0x1000;
+}
+
+
+bool tile_has_num(tile_t tile, tile_t num)
+{
+    return (~(num TILE_GET_SET) | (tile TILE_GET_SET)) == num; 
+}
+
+
+bool add_to_tile(tile_t *tile, tile_t tile_to_add)
+{
+    #ifdef DEBUG_MSG
+        putchar('\t');
+        show_tile(*tile);
+        printf(" adding ");
+        printf("[%c] ", tile_to_char(tile_to_add));
+        show_tile(tile_to_add);
+        putchar('\n');
+    #endif
+    *tile |= (tile_to_add TILE_GET_SET);
+    *tile = recount(*tile) | (*tile TILE_GET_SET);
+    return (*tile TILE_GET_SET) ^ (tile_to_add TILE_GET_SET);
+}
+
+
+bool remove_from_tile(tile_t *tile, tile_t tile_to_remove)
+{
+    tile_t before_change = *tile;
+    #ifdef DEBUG_MSG
+        putchar('\t');
+        show_tile(*tile);
+        printf(" removing [%c] ", tile_to_char(tile_to_remove));
+        show_tile(tile_to_remove);
+        putchar('\n');
+    #endif
+    *tile &= ~(tile_to_remove TILE_GET_SET);
+    *tile = recount(*tile) | (*tile TILE_GET_SET);
+    return (before_change TILE_GET_SET) & (tile_to_remove TILE_GET_SET);
+}
+
+
 bool remove_all_solved(tile_t *tiles, size_t count, tile_t *tile_to_update)
 {
     if (tile_is_solved(*tile_to_update)) {
@@ -104,6 +108,7 @@ bool remove_all_solved(tile_t *tiles, size_t count, tile_t *tile_to_update)
     #endif
     return remove_from_tile(tile_to_update, sum);
 }
+
 
 bool solve_if_unique(tile_t *tiles, size_t count)
 {
