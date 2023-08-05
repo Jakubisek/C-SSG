@@ -14,7 +14,6 @@ int main(int argc, char const *argv[])
     printf("---\nDone\n\n");
     show_grid(grid);
 
-    show_tile(grid[3]); putchar(' ');
-    show_tile(grid[4]); putchar('\n');
+    if (grid_is_solved(grid)) printf("Solved all tiles\n");
     return EXIT_SUCCESS;
 }
