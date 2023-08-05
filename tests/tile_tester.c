@@ -1,5 +1,5 @@
-#include "tile.h"
-#include "string.h"
+#include "../tile.h"
+#include <string.h>
 
 
 int main(int argc, char const *argv[])

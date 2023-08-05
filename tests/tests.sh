@@ -17,7 +17,7 @@ tile_test() {
 }
 
 run_tile_tests() {
-    gcc -Wall -o test tile.c tile_tester.c
+    gcc -Wall -o test ../tile.c tile_tester.c
     tile_test "wrong should fail" ?23456789 9
     tile_test "basic 9" 12345678? 9
     tile_test "basic 8" 1234567?9 8
