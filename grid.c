@@ -79,6 +79,21 @@ bool update_grid(grid_t grid) {
 }
 
 
+bool grid_is_solved(grid_t grid)
+{
+    for (size_t i = 0; i < 81; i++) {
+        if (!tile_is_solved(grid[i])) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool grid_is_correct(grid_t grid)
+{
+    return false;
+}
+
 const char *const line = "+---+---+---+ +---+---+---+ +---+---+---+\n";
 
 void show_grid(grid_t grid)
