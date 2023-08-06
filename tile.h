@@ -84,41 +84,40 @@ bool remove_from_tile(tile_t *tile, tile_t tile_to_remove);
 /**
  * Updates `tile_to_update` by removing all the values from `tiles` which are solved.
  *
- * @param tiles an array of tiles to compare with.
+ * @param tiles an array of pointers to tile_t that will be used for removing.
  * @param count the number of tiles in the array.
- * @param tile_to_update A pointer to the tile to update.
+ * @param tile_to_update a pointer to the tile to update.
  * @return true if the operation changes the value of `tile_to_update`, false otherwise.
  * @note including a tile with the same address as `tile_to_update` in tiles will cause it to be ignored
  */
-bool remove_all_solved(tile_t *tiles, size_t count, tile_t *tile_to_update);
+bool remove_all_solved(tile_t **tiles, size_t count, tile_t *tile_to_update);
 
 
 /**
  * Updates (only solves) all the tiles from `tiles` that contain a unique value in that array.
  *
- * @param tiles an array of tiles to check.
+ * @param tiles an array of pointers to tile_t to check.
  * @param count the number of tiles in the array.
  * @return true if any tiles are updated, false otherwise.
  * @note in a situation where multiple values in tile are unique, the highest will be chosen
  */
-bool solve_if_unique(tile_t *tiles, size_t count);
+bool solve_if_unique(tile_t **tiles, size_t count);
 
 
 /**
  * Converts a tile_t to a character.
  *
- * @param tile The tile to convert.
- * @return The character representation of the tile.
- * @note '!' means the tile is equal to TILE_ERROR or 0
- * @note ' ' means the tile is equal to TILE_EMTPY or 0x91FF
- * @note '?' means the tile is not solved but also not equal to TILE_EMPTY
- * @note 'X' means the tile format was not recognized as valid
+ * @param tile the tile to convert.
+ * @return number representing the value or other symbols if the tile is not solved.
+ * @note '!' - tile is equal to TILE_ERROR meaning it cannot contain any value
+ * @note ' ' - the tile is not solved and can contain multiple values (sum > 1)
+ * @note '?' - the tile was not recognized as valid tile_t
  */
 char tile_to_char(tile_t tile);
 
 
 /**
- * TEMP - Prints a more readable binary representation of a tile to stdout
+ * TEMPORARY - Prints a more readable binary representation of a tile to stdout
  * @note syntax (dec)sum-(bin)elements
  */
 void show_tile(tile_t tile);

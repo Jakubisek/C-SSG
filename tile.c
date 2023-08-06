@@ -20,14 +20,13 @@ tile_t char_to_tile(char num)
 char tile_to_char(tile_t tile)
 {
     if (tile == TILE_ERROR) return '!';
-    if (tile == TILE_EMPTY) return ' ';
-    if (!tile_is_solved(tile)) return '?';
+    if (!tile_is_solved(tile)) return ' ';
     
     for (size_t i = 0; i < 9; i++) {
         if (tile & 1) return i + '1';
         tile >>= 1;
     }
-    return 'X';
+    return '?';
 }
 
 void show_tile(tile_t tile)
@@ -89,7 +88,7 @@ bool remove_from_tile(tile_t *tile, tile_t tile_to_remove)
 }
 
 
-bool remove_all_solved(tile_t *tiles, size_t count, tile_t *tile_to_update)
+bool remove_all_solved(tile_t **tiles, size_t count, tile_t *tile_to_update)
 {
     if (tile_is_solved(*tile_to_update)) {
         return false;
@@ -97,8 +96,8 @@ bool remove_all_solved(tile_t *tiles, size_t count, tile_t *tile_to_update)
 
     tile_t sum = 0;
     for (size_t i = 0; i < count; i++) {
-        if (tile_is_solved(tiles[i]) && &tiles[i] != tile_to_update) {
-            sum |= tiles[i];
+        if (tile_is_solved(*(tiles[i])) && tiles[i] != tile_to_update) {
+            sum |= *(tiles[i]);
         }
     }
     #ifdef DEBUG_MSG
@@ -112,21 +111,22 @@ bool remove_all_solved(tile_t *tiles, size_t count, tile_t *tile_to_update)
 }
 
 
-bool solve_if_unique(tile_t *tiles, size_t count)
+bool solve_if_unique(tile_t **tiles, size_t count)
 {
     bool result = false;
     unsigned char occured[] = {0,0,0,0,0,0,0,0,0};
     tile_t *last_tile[9];
     for (size_t i = 0; i < count; i++) {
-        tile_t tile = tiles[i];
-        if (!tile_is_solved(tile)) {
-            for (size_t j = 0; j < 9; j++) {
-                if (tile & 1) {
-                    if (occured[j] == 0) last_tile[j] = &tiles[i];
-                    occured[j]++;
-                }
-                tile >>= 1;
+        tile_t tile = *tiles[i];
+        if (tile_is_solved(tile)) {
+            continue;
+        }
+        for (size_t j = 0; j < 9; j++) {
+            if (tile & 1) {
+                if (occured[j] == 0) last_tile[j] = tiles[i];
+                occured[j]++;
             }
+            tile >>= 1;
         }
     }
     for (size_t i = 0; i < 9; i++) {
