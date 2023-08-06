@@ -2,18 +2,18 @@
 #include "grid.h"
 
 
-void get_square(grid_t grid, tile_t *part, size_t index) {
+void get_square(grid_t grid, tile_t **part, size_t index) {
     for (size_t i = 0; i < 9; i++) {
         size_t pos = 27*(index / 3) + 3*(index % 3) + (i % 3) + 9*(i / 3);
-        part[i] = grid[pos];
+        part[i] = &grid[pos];
     }
 }
 
-void get_line(grid_t grid, tile_t *part, size_t index, bool is_row) {
-    size_t const start = is_row ? (index % 9) : index - (index % 9);
+void get_line(grid_t grid, tile_t **part, size_t index, bool is_row) {
+    size_t const start = is_row ? index - (index % 9) : (index % 9);
     for (size_t i = 0; i < 9; i++) {
         size_t pos = is_row ? start + i : start + 9*i;
-        part[i] = grid[pos];
+        part[i] = &grid[pos];
     }
 }
 
@@ -32,12 +32,11 @@ bool recursive_grid_update(grid_t grid, size_t pos) {
     bool result = false;
 
     #ifdef DEBUG_MSG
-        printf("--- Started update on (%ld, %ld) ---\nTarget: ", pos / 9, pos % 9);
+        printf("--- Started update on (%ld, %ld) --- tile ", pos / 9, pos % 9);
         show_tile(grid[pos]); putchar('\n');
     #endif
 
-    for (size_t is_row = 0; is_row < 2; is_row++)
-    {
+    for (size_t is_row = 0; is_row < 2; is_row++) {
         size_t start = is_row ? (pos / 9) * 9 : pos % 9;
         for (size_t i = 0; i < 9; i++) {
             size_t current_pos = is_row ? start + i : start + (9 * i);
@@ -78,6 +77,20 @@ bool update_grid(grid_t grid) {
     return result;
 }
 
+bool update_all_unique(grid_t grid)
+{
+    bool result = false;
+    tile_t *part[9];
+    for (size_t i = 0; i < 9; i++) {
+        for (size_t is_row = 0; is_row < 2; is_row++) {
+            get_line(grid, part, i, (bool)is_row);
+            result |= solve_if_unique(part, 9);
+        }
+        get_square(grid, part, i);
+        result |= solve_if_unique(part, 9);
+    }
+    return result;
+}
 
 bool grid_is_solved(grid_t grid)
 {
@@ -91,7 +104,33 @@ bool grid_is_solved(grid_t grid)
 
 bool grid_is_correct(grid_t grid)
 {
-    return false;
+    tile_t *part[9];
+    tile_t empty_tester;
+    for (size_t i = 0; i < 9; i++) {
+        for (size_t is_row = 0; is_row < 2; is_row++) {
+            get_line(grid, part, i, (bool)is_row);
+            empty_tester = TILE_EMPTY;
+            remove_all_solved(part, 9, &empty_tester);
+            if (empty_tester != TILE_ERROR) {
+                #ifdef DEBUG_MSG
+                    printf("%s -%ld- CONTAINS AN ERROR\n", (is_row) ? "ROW" : "COLUMN", i);
+                    show_tile(empty_tester); putchar('\n');
+                #endif
+                return false;
+            }
+        }
+        get_square(grid, part, i);
+        empty_tester = TILE_EMPTY;
+        remove_all_solved(part, 9, &empty_tester);
+        if (empty_tester != TILE_ERROR) {
+            #ifdef DEBUG_MSG
+                printf("SQUARE -%ld- CONTAINS AN ERROR\n", i);
+                show_tile(empty_tester); putchar('\n');
+            #endif
+            return false;
+        }
+    }
+    return true;
 }
 
 const char *const line = "+---+---+---+ +---+---+---+ +---+---+---+\n";
