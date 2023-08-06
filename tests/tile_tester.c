@@ -20,12 +20,18 @@ int main(int argc, char const *argv[])
         }
     }
 
+    tile_t *pointers[size];
+    for (size_t i = 0; i < size; i++) {
+        pointers[i] = &tiles[i];
+    }
+    
+
     for (size_t i = 0; i < size; i++) {
         if (!tile_is_solved(tiles[i])) {
-            remove_all_solved(tiles, size, &tiles[i]);
+            remove_all_solved(pointers, size, &tiles[i]);
         }
     }
-    solve_if_unique(tiles, size);
+    solve_if_unique(pointers, size);
 
     tile_t expected_result = 0;
     for (size_t i = 0; i < strlen(argv[2]); i++) {
