@@ -13,14 +13,13 @@ int main(int argc, char const *argv[])
     while((update_grid(grid) || update_all_unique(grid))) {
         printf("Performed cycle %d\n", cycle_count++);
         show_grid(grid);
-        show_tile(grid[28]); putchar('\t'); show_tile(grid[29]); putchar('\n');
     }
     
     printf("---\nDone\n");
 
     if (grid_is_solved(grid)) {
-        printf("Solved all tiles\n");
-        if (!grid_is_correct(grid)) printf("SOLUTION CONTAINS ERRORS\n"); else printf("no errors\n");
+        printf("Solved all tiles ");
+        printf("%s\n", grid_is_correct(grid) ? "with no errors" : " - SOLUTION CONTAINS ERRORS");
     } else {
         printf("but incomplete - not all tiles are solved\n");
     }
