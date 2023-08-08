@@ -5,6 +5,18 @@
 
 typedef tile_t* grid_t;
 
+enum PART_TYPE {
+    PART_ROW,
+    PART_COLUMN,
+    PART_SQUARE
+};
+
+#define PART_TO_STRING(pt)( \
+    (pt == PART_ROW) ? "row" : \
+    (pt == PART_COLUMN) ? "column" : \
+    (pt == PART_SQUARE) ? "square" : \
+    "invalid")
+
 int fill_grid(grid_t grid, char const *data);
 
 bool update_grid(grid_t grid);
