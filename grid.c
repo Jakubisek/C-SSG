@@ -2,20 +2,31 @@
 #include "grid.h"
 
 
-void get_square(grid_t grid, tile_t **part, size_t index) {
+void get_part(grid_t grid, tile_t **part, size_t index, enum PART_TYPE type) {
+    if (type == PART_SQUARE) {
+        for (size_t i = 0; i < 9; i++) {
+            size_t pos = 27*(index / 3) + 3*(index % 3) + (i % 3) + 9*(i / 3);
+            part[i] = &grid[pos];
+        }
+        return;
+    }
+    size_t const start = (type == PART_ROW) ? index - (index % 9) : (index % 9);
     for (size_t i = 0; i < 9; i++) {
-        size_t pos = 27*(index / 3) + 3*(index % 3) + (i % 3) + 9*(i / 3);
+        size_t pos = (type == PART_ROW) ? start + i : start + 9*i;
         part[i] = &grid[pos];
     }
 }
 
-void get_line(grid_t grid, tile_t **part, size_t index, bool is_row) {
-    size_t const start = is_row ? index - (index % 9) : (index % 9);
-    for (size_t i = 0; i < 9; i++) {
-        size_t pos = is_row ? start + i : start + 9*i;
-        part[i] = &grid[pos];
+size_t pos_from_part(enum PART_TYPE part_type, size_t index, size_t order) {
+    if (part_type == PART_ROW) {
+        return index - (index % 9) + order;
     }
+    if (part_type == PART_COLUMN) {
+        return (index % 9) + order*9;
+    }
+    return 27*(index / 3) + 3*(index % 3) + (order % 3) + 9*(order / 3);
 }
+
 
 int fill_grid(grid_t grid, char const *data)
 {
@@ -28,7 +39,12 @@ int fill_grid(grid_t grid, char const *data)
     return 81;
 }
 
+/*
+    TODO: make this readable using pos_from_part()
+*/
 bool recursive_grid_update(grid_t grid, size_t pos) {
+    
+    if (!tile_is_solved(grid[pos])) return false;
     bool result = false;
 
     #ifdef DEBUG_MSG
@@ -49,7 +65,10 @@ bool recursive_grid_update(grid_t grid, size_t pos) {
             }
         }
     }
-    // remove from the 8 square tiles out of which 4 have already been updated
+    /*  
+        remove from the 8 square tiles out of which 4 have already been updated
+        checking which were and were not updated would be slower than just doing it twice
+    */
     size_t square_corner_pos = pos - (pos % 3) - (((pos / 9) % 3) * 9);
     for (size_t i = 0; i < 27; i += 9) {
         for (size_t j = 0; j < 3; j++) {
@@ -82,12 +101,15 @@ bool update_all_unique(grid_t grid)
     bool result = false;
     tile_t *part[9];
     for (size_t i = 0; i < 9; i++) {
-        for (size_t is_row = 0; is_row < 2; is_row++) {
-            get_line(grid, part, i, (bool)is_row);
-            result |= solve_if_unique(part, 9);
+        for (int part_type = 0; part_type < 3; part_type++) {
+            get_part(grid, part, i, (enum PART_TYPE) part_type);
+            if (solve_if_unique(part, 9)) {
+                result = true;
+                for (size_t j = 0; j < 9; j++) {
+                    recursive_grid_update(grid, pos_from_part((enum PART_TYPE)part_type, i, j));
+                }
+            }
         }
-        get_square(grid, part, i);
-        result |= solve_if_unique(part, 9);
     }
     return result;
 }
@@ -107,27 +129,17 @@ bool grid_is_correct(grid_t grid)
     tile_t *part[9];
     tile_t empty_tester;
     for (size_t i = 0; i < 9; i++) {
-        for (size_t is_row = 0; is_row < 2; is_row++) {
-            get_line(grid, part, i, (bool)is_row);
+        for (int part_type = 0; part_type < 3; part_type++) {
+            get_part(grid, part, i, (enum PART_TYPE) part_type);
             empty_tester = TILE_EMPTY;
             remove_all_solved(part, 9, &empty_tester);
             if (empty_tester != TILE_ERROR) {
                 #ifdef DEBUG_MSG
-                    printf("%s -%ld- CONTAINS AN ERROR\n", (is_row) ? "ROW" : "COLUMN", i);
+                    printf("%s -%ld- CONTAINS AN ERROR\n", PART_TO_STRING(part_type), i);
                     show_tile(empty_tester); putchar('\n');
                 #endif
                 return false;
             }
-        }
-        get_square(grid, part, i);
-        empty_tester = TILE_EMPTY;
-        remove_all_solved(part, 9, &empty_tester);
-        if (empty_tester != TILE_ERROR) {
-            #ifdef DEBUG_MSG
-                printf("SQUARE -%ld- CONTAINS AN ERROR\n", i);
-                show_tile(empty_tester); putchar('\n');
-            #endif
-            return false;
         }
     }
     return true;
