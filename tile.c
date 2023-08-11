@@ -118,9 +118,10 @@ bool solve_if_unique(tile_t **tiles, size_t count)
     tile_t *last_tile[9];
     for (size_t i = 0; i < count; i++) {
         tile_t tile = *tiles[i];
-        if (tile_is_solved(tile)) {
-            continue;
-        }
+
+        if (tile == TILE_ERROR) return false;
+        if (tile_is_solved(tile)) continue;
+
         for (size_t j = 0; j < 9; j++) {
             if (tile & 1) {
                 if (occured[j] == 0) last_tile[j] = tiles[i];
