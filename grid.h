@@ -23,9 +23,11 @@ bool update_grid(grid_t grid);
 
 bool update_all_unique(grid_t grid);
 
-bool grid_is_solved(grid_t grid);
+bool grid_has_only_solved(grid_t grid);
 
-bool grid_is_correct(grid_t grid);
+bool grid_solved_correctly(grid_t grid);
+
+bool grid_contains_errors(grid_t grid);
 
 void show_grid(grid_t grid);
 
