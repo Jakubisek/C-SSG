@@ -42,12 +42,12 @@ int fill_grid(grid_t grid, char const *data)
 
     while (c != '\0') {
         if (grid_index >= 81) {
-            fprintf(stderr, "Excess data - ignoring all from '%c' at %ld\n", c, char_counter);
+            fprintf(stderr, "[LOADING] Excess data - ignoring all from '%c' at %ld\n", c, char_counter);
             break;
         }
         if ((c > '9' || c < '0') && c != '*' && c != '-') {
-            fprintf(stderr, "Encountred an unexpected character '%c' at %ld\n", c, char_counter);
-            fprintf(stderr, "The rest of the grid will be filled with empty tiles...\n");
+            fprintf(stderr, "[LOADING] Encountred an unexpected character '%c' at %ld\n", c, char_counter);
+            fprintf(stderr, "[LOADING] The rest of the grid will be filled with empty tiles...\n");
             break;
         }
         if (c == '*') {
@@ -87,7 +87,7 @@ bool recursive_grid_update(grid_t grid, size_t pos)
     bool result = false;
 
     #ifdef DEBUG_MSG
-        printf("--- Started update on (%ld, %ld) --- tile ", pos / 9, pos % 9);
+        printf("[UPDATE] Started update on (%ld, %ld) --- tile ", pos / 9, pos % 9);
         show_tile(grid[pos]); putchar('\n');
     #endif
 
@@ -167,7 +167,7 @@ bool verify_solution(grid_t grid)
             remove_all_solved(part, 9, &empty_tester);
             if (empty_tester != TILE_ERROR) {
                 #ifdef DEBUG_MSG
-                    printf("%s -%ld- CONTAINS AN ERROR\n", PART_TO_STRING(part_type), i);
+                    printf("[ERROR IN GRID] %s -%ld- CONTAINS AN ERROR: ", PART_TO_STRING(part_type), i);
                     show_tile(empty_tester); putchar('\n');
                 #endif
                 return false;
@@ -198,13 +198,13 @@ bool grid_contains_errors(grid_t grid)
                 add_to_tile(&sum_tester, *part[j]);
                 if (!tile_is_solved(*part[j])) continue;
                 if (!remove_from_tile(&empty_tester, *part[j])) {
-                    fprintf(stderr, "%s -%ld- cannot be completed: ", PART_TO_STRING(part_type), i);
+                    fprintf(stderr, "[ERROR IN GRID] %s -%ld- cannot be completed: ", PART_TO_STRING(part_type), i);
                     show_tile(empty_tester); putchar('\n');
                     return true;
                 }
             }
             if ((sum_tester TILE_GET_SET) != (TILE_EMPTY TILE_GET_SET)) {
-                fprintf(stderr, "%s -%ld- cannot be completed: ", PART_TO_STRING(part_type), i);
+                fprintf(stderr, "[ERROR IN GRID] %s -%ld- cannot be completed: ", PART_TO_STRING(part_type), i);
                 show_tile(empty_tester); putchar('\n');
                 return true;
             }
