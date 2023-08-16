@@ -16,8 +16,8 @@ int main(int argc, char const *argv[])
     while((update_grid(grid) || update_all_unique(grid))) {}
     print_grid(grid);
 
-    if (grid_has_only_solved(grid) != (argv[2][0] == 's')) return 1;
-    if (grid_solved_correctly(grid) != (argv[2][1] == 'c')) return 1;
+    if (grid_has_only_solved(grid) != (argv[2][0] == 's')) return 1; // all solved
+    if (verify_solution(grid) != (argv[2][1] == 'c')) return 1; // solution is correct
     
     return 0;
 }
