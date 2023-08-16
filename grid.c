@@ -155,14 +155,9 @@ bool grid_has_only_solved(grid_t grid)
 }
 
 
-// this requires grid_has_only_solved == true
-bool grid_solved_correctly(grid_t grid)
+bool verify_solution(grid_t grid)
 {
-    for (size_t i = 0; i < 81; i++) {
-        if (!tile_is_solved(grid[i])) {
-            return false;
-        }
-    }
+    if (!grid_has_only_solved(grid)) return false;
     tile_t *part[9];
     tile_t empty_tester;
     for (size_t i = 0; i < 9; i++) {
@@ -200,11 +195,19 @@ bool grid_contains_errors(grid_t grid)
             empty_tester = TILE_EMPTY;
             sum_tester = TILE_ERROR;
             for (size_t j = 0; j < 9; j++) {
-                if (!tile_is_solved(*part[j])) continue;
                 add_to_tile(&sum_tester, *part[j]);
-                if (!remove_from_tile(&empty_tester, *part[j])) return true;
+                if (!tile_is_solved(*part[j])) continue;
+                if (!remove_from_tile(&empty_tester, *part[j])) {
+                    fprintf(stderr, "%s -%ld- cannot be completed: ", PART_TO_STRING(part_type), i);
+                    show_tile(empty_tester); putchar('\n');
+                    return true;
+                }
             }
-            if ((sum_tester TILE_GET_SET) != (TILE_EMPTY TILE_GET_SET)) return true;
+            if ((sum_tester TILE_GET_SET) != (TILE_EMPTY TILE_GET_SET)) {
+                fprintf(stderr, "%s -%ld- cannot be completed: ", PART_TO_STRING(part_type), i);
+                show_tile(empty_tester); putchar('\n');
+                return true;
+            }
         }
     }
     return false;
