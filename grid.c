@@ -2,7 +2,7 @@
 #include "grid.h"
 
 
-void get_part(grid_t grid, tile_t **part, size_t index, enum PART_TYPE type)
+static void get_part(grid_t grid, tile_t **part, size_t index, enum PART_TYPE type)
 {
     if (type == PART_SQUARE) {
         for (size_t i = 0; i < 9; i++) {
@@ -18,7 +18,7 @@ void get_part(grid_t grid, tile_t **part, size_t index, enum PART_TYPE type)
     }
 }
 
-size_t pos_from_part(enum PART_TYPE part_type, size_t index, size_t order)
+static size_t pos_from_part(enum PART_TYPE part_type, size_t index, size_t order)
 {
     if (part_type == PART_ROW) {
         return index - (index % 9) + order;
@@ -45,10 +45,9 @@ int fill_grid(grid_t grid, char const *data)
             fprintf(stderr, "[LOADING] Excess data - ignoring all from '%c' at %ld\n", c, char_counter);
             break;
         }
-        if ((c > '9' || c < '0') && c != '*' && c != '-') {
-            fprintf(stderr, "[LOADING] Encountred an unexpected character '%c' at %ld\n", c, char_counter);
-            fprintf(stderr, "[LOADING] The rest of the grid will be filled with empty tiles...\n");
-            break;
+        if ((c > '9' || c < '0') && c != '*') {
+            c = data[++char_counter];
+            continue;
         }
         if (c == '*') {
             if (empty_counting_mode) {
@@ -167,8 +166,8 @@ bool verify_solution(grid_t grid)
             remove_all_solved(part, 9, &empty_tester);
             if (empty_tester != TILE_ERROR) {
                 #ifdef DEBUG_MSG
-                    printf("[ERROR IN GRID] %s -%ld- CONTAINS AN ERROR: ", PART_TO_STRING(part_type), i);
-                    show_tile(empty_tester); putchar('\n');
+                    printf("[ERROR IN GRID] %s -%ld- CONTAINS AN ERROR: %c",
+                        PART_TO_STR(part_type), i, tile_to_char(empty_tester));
                 #endif
                 return false;
             }
@@ -198,14 +197,18 @@ bool grid_contains_errors(grid_t grid)
                 add_to_tile(&sum_tester, *part[j]);
                 if (!tile_is_solved(*part[j])) continue;
                 if (!remove_from_tile(&empty_tester, *part[j])) {
-                    fprintf(stderr, "[ERROR IN GRID] %s -%ld- cannot be completed: ", PART_TO_STRING(part_type), i);
-                    show_tile(empty_tester); putchar('\n');
+                    #ifdef DEBUG_MSG
+                        fprintf(stderr, "[ERROR IN GRID] %s -%ld- cannot be completed: ", PART_TO_STR(part_type), i);
+                        show_tile(empty_tester); putchar('\n');
+                    #endif
                     return true;
                 }
             }
             if ((sum_tester TILE_GET_SET) != (TILE_EMPTY TILE_GET_SET)) {
-                fprintf(stderr, "[ERROR IN GRID] %s -%ld- cannot be completed: ", PART_TO_STRING(part_type), i);
-                show_tile(empty_tester); putchar('\n');
+                #ifdef DEBUG_MSG
+                    fprintf(stderr, "[ERROR IN GRID] %s -%ld- cannot be completed: ", PART_TO_STR(part_type), i);
+                    show_tile(empty_tester); putchar('\n');
+                #endif
                 return true;
             }
         }
