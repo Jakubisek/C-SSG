@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include "tile.h"
 
-tile_t recount(tile_t tile) {
+
+static tile_t recount(tile_t tile)
+{
     unsigned char count = 0;
     for (size_t i = 0; i < 9; i++) {
         if (tile & 1) count++;
@@ -10,12 +12,14 @@ tile_t recount(tile_t tile) {
     return (count << 12);
 }
 
+
 tile_t char_to_tile(char num)
 {
     if (num == '0') return TILE_EMPTY;
     if (num >= '1' && num <= '9') return 0x1000 | (1 << (num - '0' - 1));
     return TILE_ERROR;
 }
+
 
 char tile_to_char(tile_t tile)
 {
@@ -28,6 +32,7 @@ char tile_to_char(tile_t tile)
     }
     return '?';
 }
+
 
 void show_tile(tile_t tile)
 {
@@ -42,6 +47,7 @@ void show_tile(tile_t tile)
         mask >>= 1;
     }
 }
+
 
 bool tile_is_solved(tile_t tile)
 {
@@ -58,14 +64,6 @@ bool tile_has_num(tile_t tile, tile_t num)
 bool add_to_tile(tile_t *tile, tile_t tile_to_add)
 {
     tile_t before_change = *tile;
-    #ifdef DEBUG_MSG
-        putchar('\t');
-        show_tile(*tile);
-        printf(" adding ");
-        printf("[%c] ", tile_to_char(tile_to_add));
-        show_tile(tile_to_add);
-        putchar('\n');
-    #endif
     *tile |= (tile_to_add TILE_GET_SET);
     *tile = recount(*tile) | (*tile TILE_GET_SET);
     return !(before_change == *tile);
@@ -75,13 +73,6 @@ bool add_to_tile(tile_t *tile, tile_t tile_to_add)
 bool remove_from_tile(tile_t *tile, tile_t tile_to_remove)
 {
     tile_t before_change = *tile;
-    #ifdef DEBUG_MSG
-        putchar('\t');
-        show_tile(*tile);
-        printf(" removing [%c] ", tile_to_char(tile_to_remove));
-        show_tile(tile_to_remove);
-        putchar('\n');
-    #endif
     *tile &= ~(tile_to_remove TILE_GET_SET);
     *tile = recount(*tile) | (*tile TILE_GET_SET);
     return !(before_change == *tile);
@@ -137,9 +128,7 @@ bool solve_if_unique(tile_t **tiles, size_t count)
             #ifdef DEBUG_MSG
                 putchar('\t');
                 show_tile(*last_tile[i]);
-                printf(" contains unique value ");
-                putchar(i + '1');
-                putchar('\n');
+                printf(" contains unique value %c\n", '1' + (char)i);
             #endif
         }
     }
