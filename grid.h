@@ -10,35 +10,23 @@
 typedef tile_t* grid_t;
 
 
-enum PART_TYPE {
-    PART_ROW,
-    PART_COLUMN,
-    PART_SQUARE
-};
-
-#define PART_TO_STR(pt)( \
-    (pt == PART_ROW) ? "row" : \
-    (pt == PART_COLUMN) ? "column" : \
-    (pt == PART_SQUARE) ? "square" : \
-    "invalid")
-
-
 /**
- * Fills the entire grid with a data from a null terminated string. Number (if found) are loaded from left
- * to right, top to bottom, without * expansion, if less than 81 numbers are provided,
- * (counted after * expansion), the rest of the grid will be filled with TILE_EMPTY ignoring the initial values,
- * if more than 81 are found, the additional character are ignored.
+ * Fills the entire grid with data from a null terminated string. Numbers (if found) are loaded into the grid
+ * from left to right, top to bottom. If less than 81 numbers are provided, (counted after * expansion),
+ * the rest of the grid will be filled with TILE_EMPTY ignoring the initial values,
+ * if more than 81 are found, the additional characters are ignored.
  * 
  * @param grid will be rewritten with data
- * @param data string with data to fill grid all non-numeric character in data will be ignored
+ * @param data string with data to fill grid (all non-numeric character in data will be ignored)
  * @return the number of valid numeric characters that was found in data
- * @note a sequence *x* in data where x is a numeric character expands to x successive zeros (12*4*34 -> 12000034)
+ * @note a sequence *x* in data where x is a decimal integer expands to x successive zeros (12*4*34 -> 12000034)
  */
 int fill_grid(grid_t grid, char const *data);
 
 
 /**
- * Update all tiles of grid so that they contain only those values that satisfy the rules.
+ * Updates all tiles in the grid so that they contain only those values that could be used to solve that tile
+ * without sharing a row/column/square with the same value.
  * 
  * @param grid might be updated (only targets tiles that are not solved)
  * @return true if this operation resulted in any changes in grid, false otherwise
@@ -68,13 +56,13 @@ bool grid_has_only_solved(grid_t grid);
 
 
 /**
- * Verifies that all rows, columns and squares contain no duplicate values, if that is not the case,
+ * Verifies that all rows, columns, and squares contain no duplicate values, if that is not the case,
  * the invalid part and index will be printed to stderr with the number that is missing from that part,
  * (if multiple different numbers are missing no number will be shown).
  * 
  * @param grid will not be modified during this operation
  * @return true if the solution contains no invalid parts and all tiles are solved, false otherwise
- * @note invalid parts will only be printed to stderr if debug messages are enabled
+ * @note the invalid part will only be printed to stderr if debug messages are enabled
  */
 bool verify_solution(grid_t grid);
 
@@ -87,7 +75,7 @@ bool verify_solution(grid_t grid);
  * 
  * @param grid will not be modified during this operation
  * @return true if there no problems were found, false otherwise
- * @note similarly to verify_solution(), invalid parts are printed to stderr only if debug messages are enabled
+ * @note similarly to verify_solution(), the invalid part is printed to stderr only if debug messages are enabled
  */
 bool grid_contains_errors(grid_t grid);
 
