@@ -1,6 +1,24 @@
 #include <stdio.h>
 #include "grid.h"
 
+enum PART_TYPE {
+    PART_ROW,
+    PART_COLUMN,
+    PART_SQUARE
+};
+
+
+#define PART_TO_STR(pt)( \
+    (pt == PART_ROW) ? "row" : \
+    (pt == PART_COLUMN) ? "column" : \
+    (pt == PART_SQUARE) ? "square" : \
+    "invalid")
+
+
+#define DEBUGMSG_ERROR_EXCESS_DATA "[LOADING] Excess data - ignoring all from '%c' at %ld\n"
+#define DEBUGMSG_TILE_UPDATE "[UPDATE] Started update on (%ld, %ld) - tile: "
+#define DEBUGMSG_PART_ERROR "[ERROR IN GRID] %s -%ld- contains an error: %c"
+#define DEBUGMSG_PART_INVALID "[ERROR IN GRID] %s -%ld- cannot be completed: "
 
 static void get_part(grid_t grid, tile_t **part, size_t index, enum PART_TYPE type)
 {
@@ -20,12 +38,9 @@ static void get_part(grid_t grid, tile_t **part, size_t index, enum PART_TYPE ty
 
 static size_t pos_from_part(enum PART_TYPE part_type, size_t index, size_t order)
 {
-    if (part_type == PART_ROW) {
-        return index - (index % 9) + order;
-    }
-    if (part_type == PART_COLUMN) {
-        return (index % 9) + order*9;
-    }
+    if (part_type == PART_ROW) return index - (index % 9) + order;
+    if (part_type == PART_COLUMN) return (index % 9) + order*9;
+
     return 27*(index / 3) + 3*(index % 3) + (order % 3) + 9*(order / 3);
 }
 
@@ -42,7 +57,7 @@ int fill_grid(grid_t grid, char const *data)
 
     while (c != '\0') {
         if (grid_index >= 81) {
-            fprintf(stderr, "[LOADING] Excess data - ignoring all from '%c' at %ld\n", c, char_counter);
+            fprintf(stderr, DEBUGMSG_ERROR_EXCESS_DATA , c, char_counter);
             break;
         }
         if ((c > '9' || c < '0') && c != '*') {
@@ -86,7 +101,7 @@ bool recursive_grid_update(grid_t grid, size_t pos)
     bool result = false;
 
     #ifdef DEBUG_MSG
-        printf("[UPDATE] Started update on (%ld, %ld) --- tile ", pos / 9, pos % 9);
+        printf(DEBUGMSG_TILE_UPDATE, pos / 9, pos % 9);
         show_tile(grid[pos]); putchar('\n');
     #endif
 
@@ -166,8 +181,7 @@ bool verify_solution(grid_t grid)
             remove_all_solved(part, 9, &empty_tester);
             if (empty_tester != TILE_ERROR) {
                 #ifdef DEBUG_MSG
-                    printf("[ERROR IN GRID] %s -%ld- CONTAINS AN ERROR: %c",
-                        PART_TO_STR(part_type), i, tile_to_char(empty_tester));
+                    printf(DEBUGMSG_PART_ERROR, PART_TO_STR(part_type), i, tile_to_char(empty_tester));
                 #endif
                 return false;
             }
@@ -198,7 +212,7 @@ bool grid_contains_errors(grid_t grid)
                 if (!tile_is_solved(*part[j])) continue;
                 if (!remove_from_tile(&empty_tester, *part[j])) {
                     #ifdef DEBUG_MSG
-                        fprintf(stderr, "[ERROR IN GRID] %s -%ld- cannot be completed: ", PART_TO_STR(part_type), i);
+                        fprintf(stderr, DEBUGMSG_PART_INVALID, PART_TO_STR(part_type), i);
                         show_tile(empty_tester); putchar('\n');
                     #endif
                     return true;
@@ -206,7 +220,7 @@ bool grid_contains_errors(grid_t grid)
             }
             if ((sum_tester TILE_GET_SET) != (TILE_EMPTY TILE_GET_SET)) {
                 #ifdef DEBUG_MSG
-                    fprintf(stderr, "[ERROR IN GRID] %s -%ld- cannot be completed: ", PART_TO_STR(part_type), i);
+                    fprintf(stderr, DEBUGMSG_PART_INVALID, PART_TO_STR(part_type), i);
                     show_tile(empty_tester); putchar('\n');
                 #endif
                 return true;
@@ -216,18 +230,18 @@ bool grid_contains_errors(grid_t grid)
     return false;
 }
 
-const char *const line = "+---+---+---+ +---+---+---+ +---+---+---+\n";
+const char *const row_line = "+---+---+---+ +---+---+---+ +---+---+---+\n";
 
 void show_grid(grid_t grid)
 {
-    printf(line);
+    printf(row_line);
     for (size_t i = 0; i < 9; i++) {
         for (size_t j = 0; j < 9; j++) {
             printf("| %c ", tile_to_char(grid[9*i+j]));
             if (j % 3 == 2 && j != 8) printf("| ");
         }
-        printf("%s%s", "|\n", line);
-        if (i % 3 == 2 && i != 8) printf(line);
+        printf("|\n%s", row_line);
+        if (i % 3 == 2 && i != 8) printf(row_line);
     }
     putchar('\n');
 }
