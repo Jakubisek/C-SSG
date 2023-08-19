@@ -19,7 +19,8 @@ typedef tile_t* grid_t;
  * @param grid will be rewritten with data
  * @param data string with data to fill grid (all non-numeric character in data will be ignored)
  * @return the number of valid numeric characters that was found in data
- * @note a sequence *x* in data where x is a decimal integer expands to x successive zeros (12*4*34 -> 12000034)
+ * @note a sequence *x in data where x is a number expands to x successive zeros (12*434 -> 12000034)
+ * @note special case with 0 (...*0) will expand to 10 zeros
  */
 int fill_grid(grid_t grid, char const *data);
 

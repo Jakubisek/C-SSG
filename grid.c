@@ -15,8 +15,10 @@ enum PART_TYPE {
     "invalid")
 
 
-#define DEBUGMSG_ERROR_EXCESS_DATA "[LOADING] Excess data - ignoring all from '%c' at %ld\n"
-#define DEBUGMSG_TILE_UPDATE "[UPDATE] Started update on (%ld, %ld) - tile: "
+#define DEBUGMSG_EXCESS_DATA "[LOADING ERROR] Excess data - preemptively stopped at '%c' (index %ld)\n"
+#define DEBUGMSG_TILE_UPDATE "[UPDATE INFO] Started update on (%ld, %ld) - tile: "
+#define DEBUGMSG_EXPANSION_IGNORED "[LOADING WARNING] Ignored duplicate * expansion at index %ld\n"
+#define DEBUGMSG_INVALID_CHAR "[LOADING WARNING] Ingnored invalid character '%c' at index %ld\n"
 #define DEBUGMSG_PART_ERROR "[ERROR IN GRID] %s -%ld- contains an error: %c"
 #define DEBUGMSG_PART_INVALID "[ERROR IN GRID] %s -%ld- cannot be completed: "
 
@@ -47,54 +49,57 @@ static size_t pos_from_part(enum PART_TYPE part_type, size_t index, size_t order
 
 int fill_grid(grid_t grid, char const *data)
 {
-    
+    bool count_zeros = false;
     size_t char_counter = 0;
-    size_t zero_counter = 0;
     size_t grid_index = 0;
 
-    char c = data[char_counter];
-    bool empty_counting_mode = false;
+    char c;
+    while ((c = data[char_counter++]) != '\0') {
 
-    while (c != '\0') {
         if (grid_index >= 81) {
-            fprintf(stderr, DEBUGMSG_ERROR_EXCESS_DATA , c, char_counter);
+            #ifdef DEBUG_MSG
+                fprintf(stderr, DEBUGMSG_EXCESS_DATA , c, char_counter - 1);
+            #endif
             break;
         }
-        if ((c > '9' || c < '0') && c != '*') {
-            c = data[++char_counter];
-            continue;
-        }
         if (c == '*') {
-            if (empty_counting_mode) {
-                for (size_t i = 0; i < zero_counter; i++) {
-                    if ((grid_index + i) >= 81) continue;
-                    grid[grid_index + i] = TILE_EMPTY;
-                }
-                grid_index += zero_counter;
-                zero_counter = 0;
-            }
-            empty_counting_mode = !empty_counting_mode;
-            c = data[++char_counter];
+            #ifdef DEBUG_MSG
+                if (count_zeros) printf(DEBUGMSG_EXPANSION_IGNORED, char_counter - 1);
+            #endif
+            count_zeros = true;
             continue;
         }
-        if (empty_counting_mode) {
-            zero_counter = (zero_counter * 10) + (c - '0');
-            if (zero_counter > 81) zero_counter = 81;
-        } else {
-            grid[grid_index++] = char_to_tile(c);
+        if (c > '9' || c < '0') {
+            #ifdef DEBUG_MSG
+                printf(DEBUGMSG_INVALID_CHAR, c, char_counter - 1);
+            #endif
+            continue;
         }
-        c = data[++char_counter];
+        if (!count_zeros) {
+            grid[grid_index++] = char_to_tile(c);
+            continue;
+        }
+
+        count_zeros = false;
+        for (size_t i = 0; (i < c - '0') && (grid_index + i < 81); i++) grid[grid_index + i] = TILE_EMPTY;
+
+        // special case for 10 zeros
+        if (c == '0') {
+            for (size_t i = 0; (i < 10) && (grid_index + i < 81); i++) grid[grid_index + i] = TILE_EMPTY;
+            grid_index += 10;
+        }
+        grid_index += c - '0';
     }
     if (grid_index < 81) {
         for (size_t i = 0; i < 81 - grid_index; i++) {
             grid[grid_index + i] = TILE_EMPTY;
         }
     }
-    return grid_index;
+    return (grid_index > 81) ? 81 : grid_index;
 }
 
 
-bool recursive_grid_update(grid_t grid, size_t pos)
+static bool recursive_grid_update(grid_t grid, size_t pos)
 {
     
     if (!tile_is_solved(grid[pos])) return false;
