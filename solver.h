@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 #define INIT_SSTACK_SIZE 100
-#define MAX_USED_MEMORY_LIMIT 100000000 
+#define MAX_USED_MEMORY_LIMIT 1000000 
 
 
 typedef struct sudoku_game {
@@ -13,7 +13,7 @@ typedef struct sudoku_game {
 
 typedef struct solving_stack {
     sgame_t **data_array;
-    size_t size;
+    size_t item_count;
     size_t max_capacity;
 } sstack_t;
 
