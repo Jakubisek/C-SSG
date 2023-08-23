@@ -239,14 +239,14 @@ const char *const row_line = "+---+---+---+ +---+---+---+ +---+---+---+\n";
 
 void show_grid(grid_t grid)
 {
-    printf(row_line);
+    printf("%s",row_line);
     for (size_t i = 0; i < 9; i++) {
         for (size_t j = 0; j < 9; j++) {
             printf("| %c ", tile_to_char(grid[9*i+j]));
             if (j % 3 == 2 && j != 8) printf("| ");
         }
         printf("|\n%s", row_line);
-        if (i % 3 == 2 && i != 8) printf(row_line);
+        if (i % 3 == 2 && i != 8) printf("%s", row_line);
     }
     putchar('\n');
 }
