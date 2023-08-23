@@ -2,12 +2,14 @@
 #include <stdlib.h>
 
 #define INIT_SSTACK_SIZE 100
-#define MAX_USED_MEMORY_LIMIT 1000000 
+#define MAX_USED_MEMORY_LIMIT 100000 
 
 
 typedef struct sudoku_game {
     tile_t game_data[81]; // all the tiles of the sudoku
-    size_t depth; // the number of remaining forks that can be performed
+
+    // DEPTH IS DISABLED FOR NOW
+    //size_t depth; // the number of remaining forks that can be performed
 } sgame_t;
 
 
