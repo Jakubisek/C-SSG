@@ -6,7 +6,7 @@ int main(int argc, char const *argv[])
 {
     if (argc != 2) return EXIT_FAILURE;
 
-    sstack_t *solving_stack = create_solving_stack(argv[1], 10);
+    sstack_t *solving_stack = create_solving_stack(argv[1], 100000);
     if (solving_stack == NULL) {
         fprintf(stderr, "[FATAL ERROR] Could not create solving stack\n");
         return EXIT_FAILURE;
@@ -16,7 +16,7 @@ int main(int argc, char const *argv[])
     show_grid(solving_stack->data_array[0]->game_data);
 
     printf("Solving...\n\n");
-    solve(solving_stack, 30);
+    solve(solving_stack, 20);
 
     terminate_solving(solving_stack, "No problems found during solving.\n", 0);
     return EXIT_SUCCESS;
