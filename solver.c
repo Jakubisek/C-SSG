@@ -117,8 +117,8 @@ int solve(sstack_t *solving_stack, size_t max_solutions_limit)
         #ifndef DEBUG_MSG
             printf("The initial grid data contians a trivial mistake - grid has no solutions.\n");
             printf("(re-run with debug messages to see details)\n\n");
-            return 0;
         #endif
+        return 0;
     }
 
     while (solving_stack->item_count > 0) {
