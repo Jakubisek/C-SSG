@@ -31,7 +31,7 @@ static void get_part(grid_t grid, tile_t **part, size_t index, enum PART_TYPE ty
         }
         return;
     }
-    size_t const start = (type == PART_ROW) ? index - (index % 9) : (index % 9);
+    size_t const start = (type == PART_ROW) ? 9 * index : index;
     for (size_t i = 0; i < 9; i++) {
         size_t pos = (type == PART_ROW) ? start + i : start + 9*i;
         part[i] = &grid[pos];
@@ -226,7 +226,7 @@ bool grid_contains_errors(grid_t grid)
             if ((sum_tester TILE_GET_SET) != (TILE_EMPTY TILE_GET_SET)) {
                 #ifdef DEBUG_MSG
                     fprintf(stderr, DEBUGMSG_PART_INVALID, PART_TO_STR(part_type), i);
-                    show_tile(empty_tester); putchar('\n');
+                    show_tile(sum_tester); putchar('\n');
                 #endif
                 return true;
             }
