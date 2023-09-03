@@ -40,8 +40,8 @@ static void get_part(grid_t grid, tile_t **part, size_t index, enum PART_TYPE ty
 
 static size_t pos_from_part(enum PART_TYPE part_type, size_t index, size_t order)
 {
-    if (part_type == PART_ROW) return index - (index % 9) + order;
-    if (part_type == PART_COLUMN) return (index % 9) + order*9;
+    if (part_type == PART_ROW) return index*9 + order;
+    if (part_type == PART_COLUMN) return index + order*9;
 
     return 27*(index / 3) + 3*(index % 3) + (order % 3) + 9*(order / 3);
 }
@@ -120,7 +120,7 @@ static bool recursive_grid_update(grid_t grid, size_t pos)
                 (part_type == PART_SQUARE) ? start + ((i / 3) * 9) + (i % 3) :
                 (part_type == PART_ROW) ? start + i : start + (9 * i);
 
-            if (current_pos == pos || tile_is_solved(grid[current_pos])) {
+            if (current_pos == pos) {
                 continue;
             }
             if (remove_from_tile(&grid[current_pos], grid[pos]) && tile_is_solved(grid[current_pos])) {
@@ -156,6 +156,7 @@ bool update_all_unique(grid_t grid)
             }
             result = true;
             for (size_t j = 0; j < 9; j++) {
+                //printf("%ld - %s %ld %ld\n", pos_from_part((enum PART_TYPE)part_type, i, j), PART_TO_STR(part_type), i, j);
                 recursive_grid_update(grid, pos_from_part((enum PART_TYPE)part_type, i, j));
             }
         }
