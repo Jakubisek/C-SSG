@@ -9,10 +9,12 @@
 #define WARNING_STACK_NULL "[WARNING] Solution stack was incorrectly initalized and could not be freed.\n"
 #define FATAL_MAX_MEMORY_EXCEEDED "Solving was abruptly terminated - memory usage limit for stack exceeded.\n"
 #define FATAL_MALLOC_FAILED "Solving was abruptly terminated - malloc failed to allocate memory.\n"
+#define IMPOSSIBLE "The impossible became possible!\n"
 
 #define SSTACK_TOP solving_stack->item_count - 1
 
-sstack_t *create_solving_stack(char const *data, size_t size_limit)
+
+sstack_t *create_solving_stack(char const *data)
 {
     sstack_t *solving_stack = malloc(sizeof(sstack_t));
     if (solving_stack == NULL) return NULL;
@@ -29,7 +31,6 @@ sstack_t *create_solving_stack(char const *data, size_t size_limit)
         free(solving_stack);
         return NULL;
     }
-    solving_stack->size_limit = size_limit;
     solving_stack->max_capacity = INIT_SSTACK_SIZE;
 
     int filled = fill_grid(solving_stack->data_array[0]->game_data, data);
@@ -51,16 +52,7 @@ static void append_to_stack(sstack_t *solving_stack, sgame_t *game_to_append)
         solving_stack->data_array[solving_stack->item_count++] = game_to_append;
         return;
     }
-    if (solving_stack->max_capacity * 2 > (size_t)solving_stack->size_limit) {
-        terminate_solving(solving_stack, FATAL_MAX_MEMORY_EXCEEDED, 1);
-    }
-    sgame_t **new_array = realloc(solving_stack->data_array, solving_stack->max_capacity * 2);
-    if (new_array == NULL) {
-        free(game_to_append);
-        terminate_solving(solving_stack, FATAL_MALLOC_FAILED, 1);
-    }
-    solving_stack->data_array = new_array;
-    solving_stack->max_capacity *= 2;
+    terminate_solving(solving_stack, IMPOSSIBLE, 1);
 }
 
 
