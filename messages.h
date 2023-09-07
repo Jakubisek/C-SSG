@@ -7,7 +7,7 @@
 
 /*
     Issues that interupt the solving process
-    - enabled by default
+    - should be enabled by default
 */
 enum error_msg {
     E_MALOC_FAILED = 1, // %s function name, %s structure
@@ -16,14 +16,17 @@ enum error_msg {
     E_STACK_INIT_FAILED, // none
     E_INVALID_OPTION, // %s option
     E_INVALID_VALUE, // %s value, %s option
+    E_MISSING_VALUE, // %s option
     E_INVALID_INPUT_FILE, // %s file name
     E_IMPLICIT_ASSERTION_FAILED, // %s where
-    E_ABRUPT_TERMINATION_MSG // none
+    E_ABRUPT_TERMINATION_MSG, // none
+    E_DEBUG_LOG_INIT_FAILED, // none
+    E_NO_ARGUMENTS, // none
+    E_ARGUMENT_PARSING_FAILED // none
 };
 
 /*
     Events that can be handled by the program automatically but might require user attention
-    - disabled by default
 */
 enum warning_msg {
     W_CONFLICTING_SETTINGS, // %s option name
@@ -38,7 +41,6 @@ enum warning_msg {
 
 /*
     General information about the solving process
-    - enabled by default
 */
 enum info_msg {
     I_GRID_LOADING_DONE, // %ld numbers count

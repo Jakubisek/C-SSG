@@ -11,7 +11,7 @@ typedef struct message_with_arguments {
     int argc;
 } message_t;
 
-// Add more messages with: {"message", arguments expected in message}
+// Add more messages with: {"message", number of arguments expected in message}
 static const message_t get_error_msg[] = {
     {"Malloc failed to allocate reqested memory (%s) in function: '%s'.\n", 2},
     {"The memory reserved for solving stack was exceeded - please report this issue.\n", 0},
@@ -19,13 +19,17 @@ static const message_t get_error_msg[] = {
     {"Solving stack could not be initialized - terminating solving.\n", 0},
     {"Could not recognize option '%s', use --help to see the full list of valid options and syntax.\n", 1},
     {"Value '%s' given for option '%s' was not recognized as valid, use --help to see the correct syntax.\n", 2},
+    {"Option '%s' expects a value separated by '=' (example: --argument-name=value), use --help to see the correct syntax.\n", 1},
     {"Input file '%s' could not be accessed, either provide a valid file name or define grid input directly.\n", 1},
     {"Implicit assertion (%s) failed and prevented the program from continuing - please report this issue.\n", 1},
-    {"Program had to be abruptly terminated and the solving process could not conclude,\n it is possible that some solutions were skipped.", 0}
+    {"Program had to be abruptly terminated and the solving process could not conclude,\n it is possible that some solutions were skipped.\n", 0},
+    {"Debug-log file could not be initialized, no debug messages will be stored.\nTrying to continue anyway...\n", 0},
+    {"Cannot solve with no provided arguments, try --help for information about syntax.\n", 0},
+    {"Could not parse all input arguments - cannot begin solving process.\n", 0}
 };
 static const message_t get_warning_msg[] = {
-    {"Option %s contains conflicting settings to the previous options which will be ignored", 1},
-    {"Option %s in unnecessary and will be ignored - removing it will not change the output", 1},
+    {"Option '%s' implies conflicting settings to the previous options which will be ignored to resolve this.", 1},
+    {"Option '%s' in unnecessary and will be ignored - removing it will not change the output.\n", 1},
     {"Solution limit was set to 0 which prevents any solutions being displayed. Use --solutions-visibility=hide instead.\n", 0},
     {"Resolved empty zero expansion at %ls, this can be removed since it is unecessary.\n", 1},
     {"Input data contains a trivial mistake resulting in no possible solution,\nre-run with --TODO-ARG-REPLACE-THIS for more information.\n", 0},
@@ -37,7 +41,7 @@ static const message_t get_info_msg[] = {
     {"Loading of the grid was successfully finished after leading %ld numbers", 1},
     {"Finished loading, found %ld numbers in the input file '%s', leading done.\n", 2},
     {"Found and verified solution %ld (required %ld forks).\n", 2},
-    {"[SOLVING DONE]\nTotal number of solutions found:%ld\n", 1},
+    {"SOLVING DONE:\nTotal number of solutions found:%ld\n", 1},
     {"No fatal problems were detected during the solving process - all possible solution were found.\n", 0}
 };
 
@@ -49,7 +53,7 @@ void show_error(enum error_msg id, size_t argc, ...)
         fprintf(stderr, "!!errargs!!\n");
         return;
     }
-    if (parsed_options.use_color) fprintf(stderr, "%s", RED);
+    if (parsed_options.use_colour) fprintf(stderr, "%s", RED);
     fprintf(stderr, "[ERROR]\n");
     if (get_error_msg[id - 1].argc != 0) {
         va_list args;
@@ -58,7 +62,7 @@ void show_error(enum error_msg id, size_t argc, ...)
         va_end(args);
     } else fprintf(stderr, get_error_msg[id - 1].message_data);
     
-    if (parsed_options.use_color) fprintf(stderr, "%s", RESET);
+    if (parsed_options.use_colour) fprintf(stderr, "%s", RESET);
 }
 
 
@@ -69,7 +73,7 @@ void show_warning(enum warning_msg id, size_t argc, ...)
         fprintf(stderr, "!!warnargs!!\n");
         return;
     }
-    if (parsed_options.use_color) printf("%s", YELLOW);
+    if (parsed_options.use_colour) printf("%s", YELLOW);
     printf("[WARNING]\n");
     if (get_warning_msg[id].argc != 0) {
         va_list args;
@@ -78,7 +82,7 @@ void show_warning(enum warning_msg id, size_t argc, ...)
         va_end(args);
     } else printf(get_warning_msg[id].message_data);
     
-    if (parsed_options.use_color) printf("%s", RESET);
+    if (parsed_options.use_colour) printf("%s", RESET);
 }
 
 

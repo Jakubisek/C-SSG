@@ -7,7 +7,7 @@ typedef struct options {
     bool show_warnings;
     bool show_info;
     
-    bool use_color;
+    bool use_colour;
     bool compact_solution;
     bool display_solution;
 
@@ -16,7 +16,9 @@ typedef struct options {
     FILE *debug_out;
 } arg_options_t;
 
+
 extern arg_options_t parsed_options;
+
 
 bool parse_options(int argc, char const *argv[]);
 

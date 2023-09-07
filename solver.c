@@ -118,7 +118,7 @@ int solve(sstack_t *solving_stack)
         }
 
         if (verify_solution(grid)) {
-            if (solution_counter > parsed_options.solution_limit) {
+            if (solution_counter >= parsed_options.solution_limit) {
                 show_error(E_SOLUTIONS_EXCEEDED, 0);
                 terminate_solving(solving_stack, 1);
             }
