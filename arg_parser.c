@@ -1,16 +1,24 @@
 #include "messages.h"
+#include "arg_parser.h"
 
-// option default settings:
+// MAKE THIS INTO A CONSTANT (after parser function is added)
+
+//  default settings:
 arg_options_t parsed_options = {
     true, // bool show_errors;
     true, // bool show_warnings;
     true, // bool show_info;
 
-    true, // bool use_color;
+    true,  // bool use_color;
     false, // bool compact_solution;
-    true, // bool display_solution;
+    true,  // bool display_solution;
 
-    8, // unsigned long solution_limit;
+    8,    // unsigned long solution_limit;
     NULL, // const char *input_file_name;
-    NULL // FILE *debug_out;
+    NULL  // FILE *debug_out;
 };
+
+bool parse_options(int argc, char const *argv[]) {
+    /// ...
+    return false;
+}

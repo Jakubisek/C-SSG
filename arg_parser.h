@@ -1,3 +1,6 @@
+#ifndef ARG_PARSER_H
+#define ARG_PARSER_H
+
 
 typedef struct options {
     bool show_errors;
@@ -13,7 +16,8 @@ typedef struct options {
     FILE *debug_out;
 } arg_options_t;
 
-
-struct options parse_options(int argc, char const *argv[]);
-
 extern arg_options_t parsed_options;
+
+bool parse_options(int argc, char const *argv[]);
+
+#endif // ARG_PARSER_H
