@@ -1,15 +1,6 @@
 #include "solver.h"
 #include <stdio.h>
-
-#define SOLVING_TERMINATED "[SOLVING TERMINATED] Additional information:\n%s"
-#define NUMBER_OF_SOLUTION_EXCEEDED "Number of solutions found exceeds the given limit - cannot continue solving.\n"
-#define DEBUGMSG_STACK_CREATION_OK "[INFO] Stack was successfully created and loaded with %d numbers.\n"
-#define INFO_SOLUTION_FOUND "[INFO] Found and verified solution %d\n(required %ld additional numbers):\n"
-#define INFO_ALL_SOLUTIONS_LISTED "[INFO] All valid solutions were found - no other are possible\n"
-#define WARNING_STACK_NULL "[WARNING] Solution stack was incorrectly initalized and could not be freed.\n"
-#define FATAL_MAX_MEMORY_EXCEEDED "Solving was abruptly terminated - memory usage limit for stack exceeded.\n"
-#define FATAL_MALLOC_FAILED "Solving was abruptly terminated - malloc failed to allocate memory.\n"
-#define IMPOSSIBLE "The impossible became possible!\n"
+#include "messages.h"
 
 #define SSTACK_TOP solving_stack->item_count - 1
 
@@ -37,11 +28,9 @@ sstack_t *create_solving_stack(char const *data)
     
     solving_stack->data_array[0]->depth = 0;
     solving_stack->item_count = 1;
-    #ifdef DEBUG_MSG
-        printf(DEBUGMSG_STACK_CREATION_OK, filled); 
-    #endif
 
-    (void) filled; // stop a warning when DEBUG_MSG is not defined
+    debug_msg("finished stack init size = %d", INIT_SSTACK_SIZE);
+
     return solving_stack;
 }
 
@@ -52,7 +41,8 @@ static void append_to_stack(sstack_t *solving_stack, sgame_t *game_to_append)
         solving_stack->data_array[solving_stack->item_count++] = game_to_append;
         return;
     }
-    terminate_solving(solving_stack, IMPOSSIBLE, 1);
+    show_error(E_IMPLICIT_ASSERTION_FAILED, 1, "append_to_stack");
+    terminate_solving(solving_stack, 1);
 }
 
 
@@ -85,7 +75,10 @@ static void fork_stack_top(sstack_t *solving_stack)
     for (size_t i = 0; i < (tile_t)(((candidate TILE_GET_SUM) >> 12) - 1); i++) {
         
         sgame_t *new_game = malloc(sizeof(sgame_t));
-        if (new_game == NULL) terminate_solving(solving_stack, FATAL_MALLOC_FAILED, 1);
+        if (new_game == NULL) {
+            show_error(E_MALOC_FAILED, 2, "fork_stack_top", "struct sgame_t");
+            terminate_solving(solving_stack, 1);
+        }
         *new_game = *(solving_stack->data_array[fork_current_index]);
         append_to_stack(solving_stack, new_game);
     }
@@ -97,19 +90,16 @@ static void fork_stack_top(sstack_t *solving_stack)
 }
 
 
-int solve(sstack_t *solving_stack, size_t max_solutions_limit)
+int solve(sstack_t *solving_stack)
 {
     int solution_counter = 0;
 
-    // maybe add proper warnings for this
-    if (solving_stack == NULL || max_solutions_limit == 0) return 0; 
+    // maybe add proper warning for this
+    if (solving_stack == NULL) return 0; 
 
     update_grid(solving_stack->data_array[SSTACK_TOP]->game_data);
     if (grid_contains_errors(solving_stack->data_array[SSTACK_TOP]->game_data)) {
-        #ifndef DEBUG_MSG
-            printf("The initial grid data contians a trivial mistake - grid has no solutions.\n");
-            printf("(re-run with debug messages to see details)\n\n");
-        #endif
+        show_warning(W_MISTAKE_IN_INPUT, 0);
         return 0;
     }
 
@@ -128,11 +118,15 @@ int solve(sstack_t *solving_stack, size_t max_solutions_limit)
         }
 
         if (verify_solution(grid)) {
-            if (solution_counter == max_solutions_limit) {
-                terminate_solving(solving_stack, NUMBER_OF_SOLUTION_EXCEEDED , 1);
+            if (solution_counter > parsed_options.solution_limit) {
+                show_error(E_SOLUTIONS_EXCEEDED, 0);
+                terminate_solving(solving_stack, 1);
             }
-            printf(INFO_SOLUTION_FOUND, solution_counter++, solving_stack->data_array[SSTACK_TOP]->depth);
-            show_grid(grid);
+            show_info(I_SOLUTION_FOUND, 2, solution_counter++, solving_stack->data_array[SSTACK_TOP]->depth);
+
+            // TODO: handle show_grid() based on user preferences
+            if (parsed_options.display_solution) show_grid(grid);
+
             pop_stack_top(solving_stack);
             continue;
         }
@@ -143,12 +137,12 @@ int solve(sstack_t *solving_stack, size_t max_solutions_limit)
     return solution_counter;
 }
 
-void terminate_solving(sstack_t *solving_stack, char const *message, int exit_status)
+void terminate_solving(sstack_t *solving_stack, int exit_status)
 {
-    if (solving_stack->item_count == 0) printf(INFO_ALL_SOLUTIONS_LISTED);
-    printf(SOLVING_TERMINATED, message);
+    if (solving_stack->item_count == 0 && exit_status == 0) show_info(I_ALL_OK, 0);
+
     if (solving_stack == NULL) {
-        printf(WARNING_STACK_NULL);
+        debug_msg("(!) stack was NULL at exit: %d", exit_status);
         return;
     }
 

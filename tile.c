@@ -91,13 +91,6 @@ bool remove_all_solved(tile_t **tiles, size_t count, tile_t *tile_to_update)
             sum |= *(tiles[i]);
         }
     }
-    #ifdef DEBUG_MSG
-        putchar('\t');
-        show_tile(*tile_to_update);
-        printf(" updated with ");
-        show_tile(sum);
-        putchar('\n');
-    #endif
     return remove_from_tile(tile_to_update, sum);
 }
 
@@ -125,11 +118,6 @@ bool solve_if_unique(tile_t **tiles, size_t count)
         if (occured[i] == 1) {
             *last_tile[i] = char_to_tile(i + '1');
             result = true;
-            #ifdef DEBUG_MSG
-                putchar('\t');
-                show_tile(*last_tile[i]);
-                printf(" contains unique value %c\n", '1' + (char)i);
-            #endif
         }
     }
     return result;

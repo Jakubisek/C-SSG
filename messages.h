@@ -10,13 +10,15 @@
     - enabled by default
 */
 enum error_msg {
-    E_MALOC_FAILED, // %s function name, %s structure
+    E_MALOC_FAILED = 1, // %s function name, %s structure
     E_MEMORY_EXCEEDED, // none
     E_SOLUTIONS_EXCEEDED, // none
     E_STACK_INIT_FAILED, // none
     E_INVALID_OPTION, // %s option
     E_INVALID_VALUE, // %s value, %s option
     E_INVALID_INPUT_FILE, // %s file name
+    E_IMPLICIT_ASSERTION_FAILED, // %s where
+    E_ABRUPT_TERMINATION_MSG // none
 };
 
 /*
@@ -41,20 +43,20 @@ enum warning_msg {
 enum info_msg {
     I_GRID_LOADING_DONE, // %ld numbers count
     I_FILE_LOADING_DONE, // %ld numbers, %s filename
-    I_SOLUTION_FOUND, // %ld solution number
+    I_SOLUTION_FOUND, // %ld solution number, %ld depth
     I_SOLVING_DONE, // %ld total solutions
     I_ALL_OK // none
 };
 
-void show_error(arg_options_t options, enum error_msg id, size_t argc, ... );
+void show_error(enum error_msg id, size_t argc, ... );
 
 
-void show_warning(arg_options_t options, enum warning_msg id, size_t argc, ... );
+void show_warning(enum warning_msg id, size_t argc, ... );
 
 
-void show_info(arg_options_t options, enum info_msg id, size_t argc, ... );
+void show_info(enum info_msg id, size_t argc, ... );
 
 
-void debug_msg(arg_options_t options, FILE *log, const char *message, size_t argc, ...);
+void debug_msg(const char *message, size_t argc, ...);
 
 #endif // MESSAGES_H

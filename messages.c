@@ -19,7 +19,9 @@ static const message_t get_error_msg[] = {
     {"Solving stack could not be initialized - terminating solving.\n", 0},
     {"Could not recognize option '%s', use --help to see the full list of valid options and syntax.\n", 1},
     {"Value '%s' given for option '%s' was not recognized as valid, use --help to see the correct syntax.\n", 2},
-    {"Input file '%s' could not be accessed, either provide a valid file name or define grid input directly.\n", 1}
+    {"Input file '%s' could not be accessed, either provide a valid file name or define grid input directly.\n", 1},
+    {"Implicit assertion (%s) failed and prevented the program from continuing - please report this issue.\n", 1},
+    {"Program had to be abruptly terminated and the solving process could not conclude,\n it is possible that some solutions were skipped.", 0}
 };
 static const message_t get_warning_msg[] = {
     {"Option %s contains conflicting settings to the previous options which will be ignored", 1},
@@ -34,40 +36,40 @@ static const message_t get_warning_msg[] = {
 static const message_t get_info_msg[] = {
     {"Loading of the grid was successfully finished after leading %ld numbers", 1},
     {"Finished loading, found %ld numbers in the input file '%s', leading done.\n", 2},
-    {"Found and verified solution %ld.\n", 1},
+    {"Found and verified solution %ld (required %ld forks).\n", 2},
     {"[SOLVING DONE]\nTotal number of solutions found:%ld\n", 1},
-    {"No fatal problems were detected encountered during the solving process.\n", 0}
+    {"No fatal problems were detected during the solving process - all possible solution were found.\n", 0}
 };
 
 
-void show_error(arg_options_t options, enum error_msg id, size_t argc, ...)
+void show_error(enum error_msg id, size_t argc, ...)
 {
-    if (!options.show_errors) return;
-    if (argc != get_error_msg[id].argc) {
+    if (!parsed_options.show_errors) return;
+    if (argc != get_error_msg[id - 1].argc) {
         fprintf(stderr, "!!errargs!!\n");
         return;
     }
-    if (options.use_color) fprintf(stderr, "%s", RED);
+    if (parsed_options.use_color) fprintf(stderr, "%s", RED);
     fprintf(stderr, "[ERROR]\n");
-    if (get_error_msg[id].argc != 0) {
+    if (get_error_msg[id - 1].argc != 0) {
         va_list args;
         va_start(args, argc);
-        vfprintf(stderr, get_error_msg[id].message_data, args);
+        vfprintf(stderr, get_error_msg[id - 1].message_data, args);
         va_end(args);
-    } else fprintf(stderr, get_error_msg[id].message_data);
+    } else fprintf(stderr, get_error_msg[id - 1].message_data);
     
-    if (options.use_color) fprintf(stderr, "%s", RESET);
+    if (parsed_options.use_color) fprintf(stderr, "%s", RESET);
 }
 
 
-void show_warning(arg_options_t options, enum warning_msg id, size_t argc, ...)
+void show_warning(enum warning_msg id, size_t argc, ...)
 {
-    if (!options.show_warnings) return;
+    if (!parsed_options.show_warnings) return;
     if (argc != get_warning_msg[id].argc) {
         fprintf(stderr, "!!warnargs!!\n");
         return;
     }
-    if (options.use_color) printf("%s", YELLOW);
+    if (parsed_options.use_color) printf("%s", YELLOW);
     printf("[WARNING]\n");
     if (get_warning_msg[id].argc != 0) {
         va_list args;
@@ -76,18 +78,18 @@ void show_warning(arg_options_t options, enum warning_msg id, size_t argc, ...)
         va_end(args);
     } else printf(get_warning_msg[id].message_data);
     
-    if (options.use_color) printf("%s", RESET);
+    if (parsed_options.use_color) printf("%s", RESET);
 }
 
 
-void show_info(arg_options_t options, enum info_msg id, size_t argc, ...)
+void show_info(enum info_msg id, size_t argc, ...)
 {
-    if (!options.show_info) return;
+    if (!parsed_options.show_info) return;
     if (argc != get_info_msg[id].argc) {
         fprintf(stderr, "!!infoargs!!\n");
         return;
     }
-    if (get_error_msg[id].argc != 0) {
+    if (get_info_msg[id].argc != 0) {
         va_list args;
         va_start(args, argc);
         vprintf(get_info_msg[id].message_data, args);
@@ -96,11 +98,11 @@ void show_info(arg_options_t options, enum info_msg id, size_t argc, ...)
 }
 
 
-void debug_msg(arg_options_t options, FILE *log, const char *message, size_t argc, ...)
+void debug_msg(const char *message, size_t argc, ...)
 {
-    if (!options.debug_out) return;
+    if (parsed_options.debug_out == NULL) return;
     va_list args;
     va_start(args, argc);
-    vfprintf(log, message, args);
+    vfprintf(parsed_options.debug_out, message, args);
     va_end(args);
 }

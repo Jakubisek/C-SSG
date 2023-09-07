@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "grid.h"
+#include "messages.h"
 
 enum PART_TYPE {
     PART_ROW,
@@ -7,20 +8,12 @@ enum PART_TYPE {
     PART_SQUARE
 };
 
-
 #define PART_TO_STR(pt)( \
     (pt == PART_ROW) ? "row" : \
     (pt == PART_COLUMN) ? "column" : \
     (pt == PART_SQUARE) ? "square" : \
     "invalid")
 
-
-#define DEBUGMSG_EXCESS_DATA "[LOADING ERROR] Excess data - preemptively stopped at '%c' (index %ld)\n"
-#define DEBUGMSG_TILE_UPDATE "[UPDATE INFO] Started update on (%ld, %ld) - tile: "
-#define DEBUGMSG_EXPANSION_IGNORED "[LOADING WARNING] Ignored duplicate * expansion at index %ld\n"
-#define DEBUGMSG_INVALID_CHAR "[LOADING WARNING] Ingnored invalid character '%c' at index %ld\n"
-#define DEBUGMSG_PART_ERROR "[ERROR IN GRID] %s -%ld- contains an error: %c"
-#define DEBUGMSG_PART_INVALID "[ERROR IN GRID] %s -%ld- cannot be completed: "
 
 static void get_part(grid_t grid, tile_t **part, size_t index, enum PART_TYPE type)
 {
@@ -57,22 +50,16 @@ int fill_grid(grid_t grid, char const *data)
     while ((c = data[char_counter++]) != '\0') {
 
         if (grid_index >= 81) {
-            #ifdef DEBUG_MSG
-                fprintf(stderr, DEBUGMSG_EXCESS_DATA , c, char_counter - 1);
-            #endif
+            show_warning(W_INPUT_TOO_LONG, 2, c, char_counter - 1);
             break;
         }
         if (c == '*') {
-            #ifdef DEBUG_MSG
-                if (count_zeros) printf(DEBUGMSG_EXPANSION_IGNORED, char_counter - 1);
-            #endif
+            show_warning(W_EMPTY_ZERO_EXPANSION, 1, char_counter - 1);
             count_zeros = true;
             continue;
         }
         if (c > '9' || c < '0') {
-            #ifdef DEBUG_MSG
-                printf(DEBUGMSG_INVALID_CHAR, c, char_counter - 1);
-            #endif
+            show_warning(W_CHAR_IGNORED, 2, c, char_counter - 1);
             continue;
         }
         if (!count_zeros) {
@@ -105,10 +92,7 @@ static bool recursive_grid_update(grid_t grid, size_t pos)
     if (!tile_is_solved(grid[pos])) return false;
     bool result = false;
 
-    #ifdef DEBUG_MSG
-        printf(DEBUGMSG_TILE_UPDATE, pos / 9, pos % 9);
-        show_tile(grid[pos]); putchar('\n');
-    #endif
+    debug_msg("update on pos (%ld, %ld)", 2, pos / 9, pos % 9);
 
     for (int part_type = 0; part_type < 3; part_type++) {
         size_t start = 
@@ -156,7 +140,6 @@ bool update_all_unique(grid_t grid)
             }
             result = true;
             for (size_t j = 0; j < 9; j++) {
-                //printf("%ld - %s %ld %ld\n", pos_from_part((enum PART_TYPE)part_type, i, j), PART_TO_STR(part_type), i, j);
                 recursive_grid_update(grid, pos_from_part((enum PART_TYPE)part_type, i, j));
             }
         }
@@ -186,9 +169,7 @@ bool verify_solution(grid_t grid)
             empty_tester = TILE_EMPTY;
             remove_all_solved(part, 9, &empty_tester);
             if (empty_tester != TILE_ERROR) {
-                #ifdef DEBUG_MSG
-                    printf(DEBUGMSG_PART_ERROR, PART_TO_STR(part_type), i, tile_to_char(empty_tester));
-                #endif
+                debug_msg("verification failed on: %s %ld", 2, PART_TO_STR(part_type), i);
                 return false;
             }
         }
@@ -216,21 +197,9 @@ bool grid_contains_errors(grid_t grid)
             for (size_t j = 0; j < 9; j++) {
                 add_to_tile(&sum_tester, *part[j]);
                 if (!tile_is_solved(*part[j])) continue;
-                if (!remove_from_tile(&empty_tester, *part[j])) {
-                    #ifdef DEBUG_MSG
-                        fprintf(stderr, DEBUGMSG_PART_INVALID, PART_TO_STR(part_type), i);
-                        show_tile(empty_tester); putchar('\n');
-                    #endif
-                    return true;
-                }
+                if (!remove_from_tile(&empty_tester, *part[j])) return true;
             }
-            if ((sum_tester TILE_GET_SET) != (TILE_EMPTY TILE_GET_SET)) {
-                #ifdef DEBUG_MSG
-                    fprintf(stderr, DEBUGMSG_PART_INVALID, PART_TO_STR(part_type), i);
-                    show_tile(sum_tester); putchar('\n');
-                #endif
-                return true;
-            }
+            if ((sum_tester TILE_GET_SET) != (TILE_EMPTY TILE_GET_SET)) return true;
         }
     }
     return false;
@@ -240,6 +209,10 @@ const char *const row_line = "+---+---+---+ +---+---+---+ +---+---+---+\n";
 
 void show_grid(grid_t grid)
 {
+    if (!parsed_options.display_solution) return;
+
+    // TODO: handle compact grid display here
+
     printf("%s",row_line);
     for (size_t i = 0; i < 9; i++) {
         for (size_t j = 0; j < 9; j++) {
@@ -251,4 +224,3 @@ void show_grid(grid_t grid)
     }
     putchar('\n');
 }
-

@@ -55,10 +55,9 @@ sstack_t *create_solving_stack(char const *data);
  * the set limit), the function will terminate by calling terminate_solving().
  * 
  * @param solving_stack a valid pointer to non-empty solving stack that can be resized by realloc()
- * @param max_solutions_limit the number of found solution will not exceed this value
  * @return The total number of solutions that were verified and displayed.
  */
-int solve(sstack_t *solving_stack, size_t max_solutions_limit);
+int solve(sstack_t *solving_stack);
 
 
 /**
@@ -66,7 +65,6 @@ int solve(sstack_t *solving_stack, size_t max_solutions_limit);
  * If exit status is set to a non-zero value, this function will call exit() with that value.
  * 
  * @param solving_stack a valid pointer to non-empty solving stack that can be release by calling free()
- * @param message additional information about the reason for calling this function that will be displayed to stdout 
- * @param exit_status value given to exit() or 0 which will prevent calling it (message will be always displayed)
+ * @param exit_status value given to exit() or 0 in which case exit() will no be called
  */
-void terminate_solving(sstack_t *solving_stack, char const *message, int exit_status);
+void terminate_solving(sstack_t *solving_stack, int exit_status);
