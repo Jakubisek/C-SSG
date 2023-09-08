@@ -1,6 +1,5 @@
 #include "solver.h"
 #include <stdio.h>
-#include "messages.h"
 
 #define SSTACK_TOP solving_stack->item_count - 1
 
@@ -28,9 +27,6 @@ sstack_t *create_solving_stack(char const *data)
     
     solving_stack->data_array[0]->depth = 0;
     solving_stack->item_count = 1;
-
-    debug_msg("finished stack init size = %d", INIT_SSTACK_SIZE);
-
     return solving_stack;
 }
 
@@ -41,7 +37,7 @@ static void append_to_stack(sstack_t *solving_stack, sgame_t *game_to_append)
         solving_stack->data_array[solving_stack->item_count++] = game_to_append;
         return;
     }
-    show_error(E_IMPLICIT_ASSERTION_FAILED, 1, "append_to_stack");
+    fprintf(stderr, "Stack append assertion failed.\n");
     terminate_solving(solving_stack, 1);
 }
 
@@ -76,7 +72,7 @@ static void fork_stack_top(sstack_t *solving_stack)
         
         sgame_t *new_game = malloc(sizeof(sgame_t));
         if (new_game == NULL) {
-            show_error(E_MALOC_FAILED, 2, "fork_stack_top", "struct sgame_t");
+            fprintf(stderr, "Failed to allocate memory during fork.\n");
             terminate_solving(solving_stack, 1);
         }
         *new_game = *(solving_stack->data_array[fork_current_index]);
@@ -90,7 +86,7 @@ static void fork_stack_top(sstack_t *solving_stack)
 }
 
 
-int solve(sstack_t *solving_stack)
+int solve(sstack_t *solving_stack, size_t solution_limit)
 {
     size_t solution_counter = 0;
 
@@ -99,7 +95,7 @@ int solve(sstack_t *solving_stack)
 
     update_grid(solving_stack->data_array[SSTACK_TOP]->game_data);
     if (grid_contains_errors(solving_stack->data_array[SSTACK_TOP]->game_data)) {
-        show_warning(W_MISTAKE_IN_INPUT, 0);
+        printf("Input grid contains a trivial mistake which results in zero possible solutions.\n");
         return 0;
     }
 
@@ -118,18 +114,19 @@ int solve(sstack_t *solving_stack)
         }
 
         if (verify_solution(grid)) {
-            if (solution_counter >= parsed_options.solution_limit) {
-                show_error(E_SOLUTIONS_EXCEEDED, 0);
+            if (solution_counter >= solution_limit && solution_limit != 0) {
+                printf("Solution display limit was exceeded - no more will be shown.\n");
                 terminate_solving(solving_stack, 1);
             }
-            if (parsed_options.display_solution) {
-                show_info(I_SOLUTION_FOUND, 2, solution_counter, solving_stack->data_array[SSTACK_TOP]->depth);
+            if (solution_limit == 0) {
+                solution_counter++;
+                pop_stack_top(solving_stack);
+                continue;
             }
-            solution_counter++;
-            
 
-            // TODO: handle show_grid() based on user preferences
-            if (parsed_options.display_solution) show_grid(grid);
+            printf("(%ld) Solution was found and verified as correct - required %ld forks.\n",
+                solution_counter++, solving_stack->data_array[SSTACK_TOP]->depth);
+            show_grid(grid);
 
             pop_stack_top(solving_stack);
             continue;
@@ -138,16 +135,18 @@ int solve(sstack_t *solving_stack)
             fork_stack_top(solving_stack);
         }
     }
-    show_info(I_SOLVING_DONE, 1, solution_counter);
+    if (solution_limit == 0) printf("\n(...)\n\n");
+    printf("Solving concluded with %ld solutions.\n", solution_counter);
     return solution_counter;
 }
 
 void terminate_solving(sstack_t *solving_stack, int exit_status)
 {
-    if (solving_stack->item_count == 0 && exit_status == 0) show_info(I_ALL_OK, 0);
+    if (solving_stack->item_count == 0 && exit_status == 0) {
+        printf("No fatal problems encountered during solving.\n");
+    }
 
     if (solving_stack == NULL) {
-        debug_msg("(!) stack was NULL at exit: %d", exit_status);
         return;
     }
 

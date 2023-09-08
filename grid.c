@@ -1,18 +1,11 @@
 #include <stdio.h>
 #include "grid.h"
-#include "messages.h"
 
 enum PART_TYPE {
     PART_ROW,
     PART_COLUMN,
     PART_SQUARE
 };
-
-#define PART_TO_STR(pt)( \
-    (pt == PART_ROW) ? "row" : \
-    (pt == PART_COLUMN) ? "column" : \
-    (pt == PART_SQUARE) ? "square" : \
-    "invalid")
 
 
 static void get_part(grid_t grid, tile_t **part, size_t index, enum PART_TYPE type)
@@ -50,17 +43,20 @@ int fill_grid(grid_t grid, char const *data)
     while ((c = data[char_counter++]) != '\0') {
 
         if (grid_index >= 81) {
-            show_warning(W_INPUT_TOO_LONG, 2, c, char_counter - 1);
+            printf("Warning: input contains redundant data, ignoring everythinf from '%c' at %ld.\n", c, char_counter - 1);
             break;
         }
         if (c == '*') {
-            if (count_zeros) show_warning(W_EMPTY_ZERO_EXPANSION, 1, char_counter - 1);
+            if (count_zeros) printf("Grid loading: ignored redundant * expansion at %ld.\n", char_counter - 1);
             count_zeros = true;
             continue;
         }
         if (c > '9' || c < '0') {
-            show_warning(W_CHAR_IGNORED, 2, c, char_counter - 1);
-            continue;
+            // skip warning for grid characters
+            if (c == ' ' || c == '|' || c == '-' || c == '+' || c == '.') {
+                continue;
+            }
+            printf("Grid loading: ignored unexpected character '%c' at %ld.\n ", c, char_counter - 1);
         }
         if (!count_zeros) {
             grid[grid_index++] = char_to_tile(c);
@@ -91,8 +87,6 @@ static bool recursive_grid_update(grid_t grid, size_t pos)
     
     if (!tile_is_solved(grid[pos])) return false;
     bool result = false;
-
-    debug_msg("update on pos (%ld, %ld)", 2, pos / 9, pos % 9);
 
     for (int part_type = 0; part_type < 3; part_type++) {
         size_t start = 
@@ -169,7 +163,6 @@ bool verify_solution(grid_t grid)
             empty_tester = TILE_EMPTY;
             remove_all_solved(part, 9, &empty_tester);
             if (empty_tester != TILE_ERROR) {
-                debug_msg("verification failed on: %s %ld", 2, PART_TO_STR(part_type), i);
                 return false;
             }
         }
@@ -209,15 +202,19 @@ const char *const row_line = "+---+---+---+ +---+---+---+ +---+---+---+\n";
 
 void show_grid(grid_t grid)
 {
-    if (!parsed_options.display_solution) return;
+    #ifdef HIDE_SOLUTONS
+    return;
+    #endif
 
-    if(parsed_options.compact_solution) {
-        for (size_t i = 0; i < 81; i++) {
-            putchar(tile_to_char(grid[i]));
-        }
-        putchar('\n');
-        return;
+    #ifdef COMPACT_SOLUTIONS
+
+    for (size_t i = 0; i < 81; i++) {
+        putchar(tile_to_char(grid[i]));
     }
+    putchar('\n');
+    return;
+
+    #else
 
     // normal grid display
     printf("%s",row_line);
@@ -230,4 +227,6 @@ void show_grid(grid_t grid)
         if (i % 3 == 2 && i != 8) printf("%s", row_line);
     }
     putchar('\n');
+
+    #endif
 }

@@ -50,14 +50,15 @@ sstack_t *create_solving_stack(char const *data);
 
 /**
  * Solve the contents of the solving stack displaying all solutions found to stdout. If the number of solutions
- * found exceeds max_solution, this function will preemtively end solving (meaning it is possible that not all
+ * found exceeds solution_limit, this function will preemtively end solving (meaning it is possible that not all
  * solutions were found). If this function ecounter a fatal memory failure (malloc() fails, used memory exceeds
  * the set limit), the function will terminate by calling terminate_solving().
  * 
  * @param solving_stack a valid pointer to non-empty solving stack that can be resized by realloc()
+ * @param solution_limit the maximum number of solution that should be displayed
  * @return The total number of solutions that were verified and displayed.
  */
-int solve(sstack_t *solving_stack);
+int solve(sstack_t *solving_stack, size_t solution_limit);
 
 
 /**
