@@ -115,7 +115,7 @@ int solve(sstack_t *solving_stack, size_t solution_limit)
 
         if (verify_solution(grid)) {
             if (solution_counter >= solution_limit && solution_limit != 0) {
-                printf("Solution display limit was exceeded - no more will be shown.\n");
+                printf("Solution display limit was exceeded - ending solving process.\n");
                 terminate_solving(solving_stack, 1);
             }
             if (solution_limit == 0) {
