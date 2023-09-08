@@ -2,7 +2,7 @@
 
 ## Disclaimer
 
-This project was created for educational purposes and fun, if you are looking for the fastest or most reliable way to solve Sudoku, this in probably not the best choice. Also be aware that it is still work-in-progress and there are likely a lot of undiscovered bugs, feel free to report them if you encounter any.
+This project was created for educational purposes and fun, if you are looking for the fastest or most reliable way to solve Sudoku, this is probably not the best choice. Also be aware that it is still work-in-progress and there are likely a lot of undiscovered bugs, feel free to report them if you encounter any.
 
 ## How to use
 
