@@ -7,7 +7,6 @@ enum PART_TYPE {
     PART_SQUARE
 };
 
-
 static void get_part(grid_t grid, tile_t **part, size_t index, enum PART_TYPE type)
 {
     if (type == PART_SQUARE) {
@@ -56,7 +55,8 @@ int fill_grid(grid_t grid, char const *data)
             if (c == ' ' || c == '|' || c == '-' || c == '+' || c == '.') {
                 continue;
             }
-            printf("Grid loading: ignored unexpected character '%c' at %ld.\n ", c, char_counter - 1);
+            printf("Grid loading: ignored unexpected character '%c' at %ld.\n", c, char_counter - 1);
+            continue;
         }
         if (!count_zeros) {
             grid[grid_index++] = char_to_tile(c);
