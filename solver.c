@@ -92,7 +92,7 @@ static void fork_stack_top(sstack_t *solving_stack)
 
 int solve(sstack_t *solving_stack)
 {
-    int solution_counter = 0;
+    size_t solution_counter = 0;
 
     // maybe add proper warning for this
     if (solving_stack == NULL) return 0; 
@@ -122,7 +122,11 @@ int solve(sstack_t *solving_stack)
                 show_error(E_SOLUTIONS_EXCEEDED, 0);
                 terminate_solving(solving_stack, 1);
             }
-            show_info(I_SOLUTION_FOUND, 2, solution_counter++, solving_stack->data_array[SSTACK_TOP]->depth);
+            if (parsed_options.display_solution) {
+                show_info(I_SOLUTION_FOUND, 2, solution_counter, solving_stack->data_array[SSTACK_TOP]->depth);
+            }
+            solution_counter++;
+            
 
             // TODO: handle show_grid() based on user preferences
             if (parsed_options.display_solution) show_grid(grid);
@@ -134,6 +138,7 @@ int solve(sstack_t *solving_stack)
             fork_stack_top(solving_stack);
         }
     }
+    show_info(I_SOLVING_DONE, 1, solution_counter);
     return solution_counter;
 }
 

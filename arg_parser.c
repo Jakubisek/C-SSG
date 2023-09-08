@@ -17,7 +17,8 @@ arg_options_t parsed_options = {
     NULL  // FILE *debug_out
 };
 
-#define DEBUG_LOG_FILE_NAME "cssg_debug_log.txt"
+// change the name oh the log file
+#define DEBUG_LOG_FILE_NAME "cssg_debug_log"
 
 
 static bool parse_ulong(char const *str_to_parse, size_t *parse_result)
@@ -76,12 +77,12 @@ static bool single_option_parse(char const *option_string, struct changed_option
     if (str_equal(option, "--solution-limit") || str_equal(option, "-sl")) {
         
         // requires value
-        if (value == NULL) {
+        if (value == NULL || *value == '\0') {
             show_error(E_MISSING_VALUE, 1, option_string);
             return false;
         }
         // value must be numeric (size_t)
-        size_t numeric_value;
+        size_t numeric_value = 0;
         if (!parse_ulong(value, &numeric_value)) {
             show_error(E_INVALID_VALUE, 2, value, option_string);
             return false;
@@ -110,7 +111,7 @@ static bool single_option_parse(char const *option_string, struct changed_option
     // TOGGLE IF COLOURS SHOULD BE USED TO DISPLAY MESSAGES
     if (str_equal(option, "--use-colours") || str_equal(option, "-uc")) {
         if (changes->colour_set || parsed_options.use_colour || changes->message_visibility_set) {
-            show_warning(W_UNNECESSARY_SETTINGS, 1, option);
+            show_warning(W_UNNECESSARY_SETTINGS, 1, option_string);
         }
         parsed_options.use_colour = true;
         changes->colour_set = true;
@@ -118,7 +119,7 @@ static bool single_option_parse(char const *option_string, struct changed_option
     }
     if (str_equal(option, "--no-colours") || str_equal(option, "-nc")) {
         if (changes->colour_set || !parsed_options.use_colour) {
-            show_warning(W_UNNECESSARY_SETTINGS, 1, option);
+            show_warning(W_UNNECESSARY_SETTINGS, 1, option_string);
         }
         parsed_options.use_colour = false;
         changes->colour_set = true;
@@ -143,13 +144,13 @@ static bool single_option_parse(char const *option_string, struct changed_option
 
     // CREATE DEBUG-LOG FILE
     if (str_equal(option, "--create-debug-log") || str_equal(option, "-dl")) {
-        if (changes->debug_log_used || parsed_options.debug_out == NULL) {
+        if (changes->debug_log_used || parsed_options.debug_out != NULL) {
             show_warning(W_UNNECESSARY_SETTINGS, 1, option);
         }
         FILE *dlog = fopen(DEBUG_LOG_FILE_NAME, "w");
         if (dlog == NULL) {
             show_error(E_DEBUG_LOG_INIT_FAILED, 0);
-            return false;
+            return true;
         }
         parsed_options.debug_out = dlog;
         return true;
@@ -158,13 +159,13 @@ static bool single_option_parse(char const *option_string, struct changed_option
     // USE FILE AS INPUT FILE
     if (str_equal(option, "--file-input") || str_equal(option, "-fi")) {
         if (changes->file_input_set) {
-            show_warning(W_UNNECESSARY_SETTINGS, 1, option);
+            show_warning(W_UNNECESSARY_SETTINGS, 1, option_string);
             return false;
         }
         parsed_options.input_file_name = argv[argc - 1];
         return true;
     }
-    
+
     // CHANGE SOLUTION VISIBILITY
     if (str_equal(option, "--solution-visibility") || str_equal(option, "-sv")) {
         
@@ -181,8 +182,8 @@ static bool single_option_parse(char const *option_string, struct changed_option
 
         if (changes->sol_visibility_set) {
             show_warning(W_UNNECESSARY_SETTINGS, 1, option_string);
-            return false;
         }
+
         if (str_equal(value, "hide")) {
             if (!parsed_options.display_solution) show_warning(W_UNNECESSARY_SETTINGS, 1, option_string);
             parsed_options.display_solution = false;
@@ -193,10 +194,11 @@ static bool single_option_parse(char const *option_string, struct changed_option
             if (parsed_options.compact_solution) show_warning(W_UNNECESSARY_SETTINGS, 1, option_string);
             parsed_options.compact_solution = true;
         }
+        changes->message_visibility_set = true;
         return true;
     }
     
-    show_error(E_INVALID_OPTION, 1, option);
+    show_error(E_INVALID_OPTION, 1, option_string);
     return false;
 }
 

@@ -28,10 +28,10 @@ static const message_t get_error_msg[] = {
     {"Could not parse all input arguments - cannot begin solving process.\n", 0}
 };
 static const message_t get_warning_msg[] = {
-    {"Option '%s' implies conflicting settings to the previous options which will be ignored to resolve this.", 1},
+    {"Option '%s' implies conflicting settings to the previous options which will be ignored to resolve this.\n", 1},
     {"Option '%s' in unnecessary and will be ignored - removing it will not change the output.\n", 1},
     {"Solution limit was set to 0 which prevents any solutions being displayed. Use --solutions-visibility=hide instead.\n", 0},
-    {"Resolved empty zero expansion at %ls, this can be removed since it is unecessary.\n", 1},
+    {"Resolved empty zero expansion at %ld, this can be removed since it is unecessary.\n", 1},
     {"Input data contains a trivial mistake resulting in no possible solution,\nre-run with --TODO-ARG-REPLACE-THIS for more information.\n", 0},
     {"Input character '%c' at '%ld' was ignored, resuming loading...\n", 2},
     {"Input is incomplete and was padded with %ld empty spaces, check the input data if this was not intentional.\n", 1},
@@ -41,7 +41,7 @@ static const message_t get_info_msg[] = {
     {"Loading of the grid was successfully finished after leading %ld numbers", 1},
     {"Finished loading, found %ld numbers in the input file '%s', leading done.\n", 2},
     {"Found and verified solution %ld (required %ld forks).\n", 2},
-    {"SOLVING DONE:\nTotal number of solutions found:%ld\n", 1},
+    {"SOLVING DONE:\nTotal number of solutions found: %ld\n", 1},
     {"No fatal problems were detected during the solving process - all possible solution were found.\n", 0}
 };
 
@@ -109,4 +109,5 @@ void debug_msg(const char *message, size_t argc, ...)
     va_start(args, argc);
     vfprintf(parsed_options.debug_out, message, args);
     va_end(args);
+    putc('\n', parsed_options.debug_out);
 }

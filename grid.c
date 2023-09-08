@@ -54,7 +54,7 @@ int fill_grid(grid_t grid, char const *data)
             break;
         }
         if (c == '*') {
-            show_warning(W_EMPTY_ZERO_EXPANSION, 1, char_counter - 1);
+            if (count_zeros) show_warning(W_EMPTY_ZERO_EXPANSION, 1, char_counter - 1);
             count_zeros = true;
             continue;
         }
@@ -211,8 +211,15 @@ void show_grid(grid_t grid)
 {
     if (!parsed_options.display_solution) return;
 
-    // TODO: handle compact grid display here
+    if(parsed_options.compact_solution) {
+        for (size_t i = 0; i < 81; i++) {
+            putchar(tile_to_char(grid[i]));
+        }
+        putchar('\n');
+        return;
+    }
 
+    // normal grid display
     printf("%s",row_line);
     for (size_t i = 0; i < 9; i++) {
         for (size_t j = 0; j < 9; j++) {
