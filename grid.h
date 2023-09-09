@@ -75,10 +75,10 @@ bool verify_solution(grid_t grid);
  * result as !verify_solution().
  * 
  * @param grid will not be modified during this operation
+ * @param explain_error if true messages about details of the error will be displayed
  * @return true if there no problems were found, false otherwise
- * @note similarly to verify_solution(), the invalid part is printed to stderr only if debug messages are enabled
  */
-bool grid_contains_errors(grid_t grid);
+bool grid_contains_errors(grid_t grid, bool explain_error);
 
 
 /**
