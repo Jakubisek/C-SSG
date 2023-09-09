@@ -42,8 +42,8 @@ This project was created for educational purposes and fun, if you are looking fo
    Also any consecutive group of zeros with can be replaced with  `*n` where n represents the number of zeroes: <br>
    `*669107*7*55*4359*541*27*46*3205*491*4404006007*590308`
 
-   > Some specific examples:
-   > `\*4` will be interpreted as 0000 <br>
+   > Some specific examples:<br>
+   > `*4` will be interpreted as 0000 <br>
    > `1*32` will be interpreted as 10002 (only the first digit after '\*' will be used) <br>
    > `*0` will be interpreted as 0000000000 (10 zeros) <br>
 
@@ -53,7 +53,7 @@ This project was created for educational purposes and fun, if you are looking fo
     ./cssg *669107*7*55*4359*541*27*46*3205*491*4404006007*590308
     ```
 
-    Optionally you can also limit the maximum number of solution that should be displayed (if the puzzle has multiple solutions): <br>
+    Optionally, you can also limit the maximum number of solution that should be displayed (if the puzzle has multiple solutions): <br>
 
     ```bash
    ./cssg 5 *669107*7*55*4359*541*27*46*3205*491*4404006007*590308
