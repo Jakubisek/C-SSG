@@ -94,8 +94,10 @@ int solve(sstack_t *solving_stack, size_t solution_limit)
     if (solving_stack == NULL) return 0; 
 
     update_grid(solving_stack->data_array[SSTACK_TOP]->game_data);
-    if (grid_contains_errors(solving_stack->data_array[SSTACK_TOP]->game_data)) {
-        printf("Input grid contains a trivial mistake which results in zero possible solutions.\n");
+    if (grid_contains_errors(solving_stack->data_array[SSTACK_TOP]->game_data, true)) {
+        printf("in the initial grid after it has been updated:\n");
+        show_grid(solving_stack->data_array[SSTACK_TOP]->game_data);
+        printf("The above situation makes it so that there are no possible solutions.\n");
         return 0;
     }
 
@@ -103,7 +105,7 @@ int solve(sstack_t *solving_stack, size_t solution_limit)
         grid_t grid = solving_stack->data_array[SSTACK_TOP]->game_data;
         bool found_errors = false;
         while((update_grid(grid) || update_all_unique(grid))) {
-            if (grid_contains_errors(grid)) {
+            if (grid_contains_errors(grid, false)) {
                 found_errors = true;
                 break;
             } 
