@@ -2,7 +2,7 @@
 
 ## Disclaimer
 
-This project was created for educational purposes and fun, if you are looking for the fastest or most reliable way to solve Sudoku, this in probably not the best choice. Also be aware that it is still work-in-progress and there are likely a lot of undiscovered bugs, feel free to report them if you encounter any.
+This project was created for educational purposes and fun, if you are looking for the fastest or most reliable way to solve Sudoku, this is probably not the best choice. Also be aware that it is still work-in-progress and there are likely a lot of undiscovered bugs, feel free to report them if you encounter any.
 
 ## How to use
 
@@ -14,38 +14,38 @@ This project was created for educational purposes and fun, if you are looking fo
 
 2. Rewrite the Sudoku you wish to solve from right to left, up to bottom, empty spaces being represented by `0` example:
 
-```
-┏━━━┯━━━┯━━━┳━━━┯━━━┯━━━┳━━━┯━━━┯━━━┓
-┃   │   │   ┃   │   │   ┃ 6 │ 9 │ 1 ┃
-┠───┼───┼───╂───┼───┼───╂───┼───┼───┨
-┃   │ 7 │   ┃   │   │   ┃   │   │   ┃
-┠───┼───┼───╂───┼───┼───╂───┼───┼───┨
-┃   │   │   ┃   │   │ 5 ┃   │   │   ┃
-┣━━━┿━━━┿━━━╋━━━┿━━━┿━━━╋━━━┿━━━┿━━━┫
-┃   │ 3 │ 5 ┃ 9 │   │   ┃   │   │   ┃
-┠───┼───┼───╂───┼───┼───╂───┼───┼───┨
-┃ 4 │ 1 │   ┃   │ 7 │   ┃   │   │   ┃
-┠───┼───┼───╂───┼───┼───╂───┼───┼───┨
-┃ 6 │   │   ┃   │ 2 │   ┃ 5 │   │   ┃
-┣━━━┿━━━┿━━━╋━━━┿━━━┿━━━╋━━━┿━━━┿━━━┫
-┃   │   │ 9 ┃ 1 │   │   ┃   │   │ 4 ┃
-┠───┼───┼───╂───┼───┼───╂───┼───┼───┨
-┃   │ 4 │   ┃   │ 6 │   ┃   │ 7 │   ┃
-┠───┼───┼───╂───┼───┼───╂───┼───┼───┨
-┃   │   │   ┃   │ 9 │   ┃ 3 │   │ 8 ┃
-┗━━━┷━━━┷━━━┻━━━┷━━━┷━━━┻━━━┷━━━┷━━━┛
-```
+    ```
+    ┏━━━┯━━━┯━━━┳━━━┯━━━┯━━━┳━━━┯━━━┯━━━┓
+    ┃   │   │   ┃   │   │   ┃ 6 │ 9 │ 1 ┃
+    ┠───┼───┼───╂───┼───┼───╂───┼───┼───┨
+    ┃   │ 7 │   ┃   │   │   ┃   │   │   ┃
+    ┠───┼───┼───╂───┼───┼───╂───┼───┼───┨
+    ┃   │   │   ┃   │   │ 5 ┃   │   │   ┃
+    ┣━━━┿━━━┿━━━╋━━━┿━━━┿━━━╋━━━┿━━━┿━━━┫
+    ┃   │ 3 │ 5 ┃ 9 │   │   ┃   │   │   ┃
+    ┠───┼───┼───╂───┼───┼───╂───┼───┼───┨
+    ┃ 4 │ 1 │   ┃   │ 7 │   ┃   │   │   ┃
+    ┠───┼───┼───╂───┼───┼───╂───┼───┼───┨
+    ┃ 6 │   │   ┃   │ 2 │   ┃ 5 │   │   ┃
+    ┣━━━┿━━━┿━━━╋━━━┿━━━┿━━━╋━━━┿━━━┿━━━┫
+    ┃   │   │ 9 ┃ 1 │   │   ┃   │   │ 4 ┃
+    ┠───┼───┼───╂───┼───┼───╂───┼───┼───┨
+    ┃   │ 4 │   ┃   │ 6 │   ┃   │ 7 │   ┃
+    ┠───┼───┼───╂───┼───┼───╂───┼───┼───┨
+    ┃   │   │   ┃   │ 9 │   ┃ 3 │   │ 8 ┃
+    ┗━━━┷━━━┷━━━┻━━━┷━━━┷━━━┻━━━┷━━━┷━━━┛
+    ```
 
-   Would be written as:
+   would be written as:
    `000000691070000000000005000035900000410070000600020500009100004040060070000090308` <br>
-   If there are any zeros at the end of the sequence like so: `...41300000000` they can be safely omitted.
-   You can also replace a string of consecutive zeros with *n where n represents the number of zeroes:
-
-   > \*4 will be interpreted as 0000 <br>
-   > 1*32 will be interpreted as 10002 (only the first digit after '\*' will be used) <br>
-   > *0 will be interpreted as 0000000000 (10 zeros) <br>
-
+   If the resulting sequence ends with zeroes, they can be safely omitted.
+   Also any consecutive group of zeros with can be replaced with  `*n` where n represents the number of zeroes: <br>
    `*669107*7*55*4359*541*27*46*3205*491*4404006007*590308`
+
+   > Some specific examples:
+   > `\*4` will be interpreted as 0000 <br>
+   > `1*32` will be interpreted as 10002 (only the first digit after '\*' will be used) <br>
+   > `*0` will be interpreted as 0000000000 (10 zeros) <br>
 
 3. Use the obtained representation of the table as the last argument for the compiled file: <br>
     
@@ -59,7 +59,7 @@ This project was created for educational purposes and fun, if you are looking fo
    ./cssg 5 *669107*7*55*4359*541*27*46*3205*491*4404006007*590308
    ```
 
-    With this the program will end the solving process after it finds more than 5 valid solutions. <br>
+    With this the program will end the solving process if it finds more than 5 valid solutions. <br>
 
    > if you use `0` as the solution limit, the program will try to count **all the possible solutions**
    > this might take a long time with some inputs, so it will probably be necessary to interrupt the program, also none of the found solution will be displayed when this feature is used.
@@ -76,10 +76,10 @@ While this program (even in its incomplete state) is guaranteed to solve any val
 
 ## How it works (oversimplified summary)
 
-Each tile of the Sudoku grid is represented as a set with the capacity to hold 9 elements (the numbers from 1 to 9). Following the rules, all the tiles are continuously updated so that they only contain the numbers that are not present in their respective row/column/square. If a tile has only one number as its element, it is considered solved. Also if a tile contains a number that is unique in that row/column/square, all the other values are removed.
+Each tile of the Sudoku grid is represented as a set with the capacity to hold 9 elements (the numbers from 1 to 9). Following the rules, all the tiles are continuously updated so that they only contain the numbers that are not present in their respective row/column/square. If a tile has only one number it can contain, it is considered solved. Also if a tile contains a number that is unique in that row/column/square, all the other values are removed which solves that tile.
 > if you want more details, those techniques are commonly known as finding naked and hidden singles
 
-This is not usually enough to solve harder Sudoku so if the program detects it cannot add any more numbers, it will find the first tile with the smallest number of options for number it can contain and splits the grid into multiple variants where that particular tile is solved. In the code, this operation is referred to as a **fork**. Since all possible configurations are accounted for, it is guaranteed that all possible solution are eventually found (at most this could take 80 forks, but it is unusual for a solution to take more than 40). Because forked grids are evaluated from the highest element in the set to the lowest, solutions will be ordered so that the first solved number is the highest.
+This is not usually enough to solve harder Sudoku so if the program detects it cannot add any more numbers, it will find the first tile with the smallest number of options for number it can contain and splits the grid into multiple variants where that particular tile is solved (with alle the possible numbers it could contain). In the code, this operation is referred to as a **fork**. Since all possible configurations are accounted for, it is guaranteed that all possible solution are eventually found (at most this could take 80 forks, but it is unusual for a solution to take more than 40). Because forked grids are evaluated from the highest element in the tile set to the lowest, solutions will be ordered so that the first solved number is the highest.
 
 > for more information, check the header files in source code
 
