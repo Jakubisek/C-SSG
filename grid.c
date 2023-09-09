@@ -6,6 +6,8 @@ enum PART_TYPE {
     PART_COLUMN,
     PART_SQUARE
 };
+const char *const pt[] = {"row", "column", "square"};
+
 
 static void get_part(grid_t grid, tile_t **part, size_t index, enum PART_TYPE type)
 {
@@ -170,10 +172,13 @@ bool verify_solution(grid_t grid)
     return true;
 }
 
-bool grid_contains_errors(grid_t grid)
+
+bool grid_contains_errors(grid_t grid, bool explain_error)
 {
     for (size_t i = 0; i < 81; i++) {
         if (grid[i] == TILE_ERROR) {
+            if (!explain_error) return true;
+            printf("Grid contained duplicit values which were removed and marked with '!'.\n");
             return true;
         }
     }
@@ -190,9 +195,19 @@ bool grid_contains_errors(grid_t grid)
             for (size_t j = 0; j < 9; j++) {
                 add_to_tile(&sum_tester, *part[j]);
                 if (!tile_is_solved(*part[j])) continue;
-                if (!remove_from_tile(&empty_tester, *part[j])) return true;
+                if (!remove_from_tile(&empty_tester, *part[j])) {
+                    printf("Could not complete %s %ld, pos %ld.\n", pt[part_type], i, j);
+                    return true;
+                }
             }
-            if ((sum_tester TILE_GET_SET) != (TILE_EMPTY TILE_GET_SET)) return true;
+            if ((sum_tester TILE_GET_SET) != (TILE_EMPTY TILE_GET_SET)) {
+                if (!explain_error) return true;
+                printf("Could not complete %s %ld, missing: ", pt[part_type], i);
+                tile_t missing_tile = ((9 << 12) - (sum_tester TILE_GET_SUM)) | ((~sum_tester) TILE_GET_SET);
+                show_tile(missing_tile);
+                printf("%s %c\n", tile_is_solved(missing_tile) ? " aka" : "", tile_to_char(missing_tile));
+                return true;
+            }
         }
     }
     return false;
