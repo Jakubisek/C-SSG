@@ -49,6 +49,7 @@ tile_t char_to_tile(char num);
 bool tile_is_solved(tile_t tile);
 
 
+// CURRENTLY UNUSED
 /**
  * Checks if a tile contains all the elements from another tile.
  *
@@ -65,7 +66,7 @@ bool tile_has_num(tile_t tile, tile_t num);
  * @param tile a pointer to the tile to update.
  * @param tile_to_add the tile to add to the original (first) tile.
  * @return true if the operation changes the value of `tile`, false otherwise.
- * @warning ignores sum bits of both parameters recalcualting a new value after addition
+ * @warning ignores sum bits of both parameters recalculating a new value after addition
  */
 bool add_to_tile(tile_t *tile, tile_t tile_to_add);
 
@@ -76,7 +77,7 @@ bool add_to_tile(tile_t *tile, tile_t tile_to_add);
  * @param tile a pointer to the tile to update.
  * @param tile_to_remove the tile to remove from the original (first) tile.
  * @return true if the operation changes the value of `tile`, false otherwise.
- * @warning ignores sum bits of both parameters recalcualting a new value after subtraction
+ * @warning ignores sum bits of both parameters recalculating a new value after subtraction
  */
 bool remove_from_tile(tile_t *tile, tile_t tile_to_remove);
 
