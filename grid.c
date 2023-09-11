@@ -1,6 +1,16 @@
 #include <stdio.h>
 #include "grid.h"
 
+/*
+    If you wish to save a large number of solutions into a file, it might be 
+    desirable to disable the table drawing and instead show the solutions as just
+    a string of numbers. If that is the case, uncomment the next line with #define.
+    Alternatively, you can also define it when compiling the program with -DCOMPACT_SOLUTIONS
+*/
+
+// #define COMPACT_SOLUTIONS
+
+
 enum PART_TYPE {
     PART_ROW,
     PART_COLUMN,
@@ -44,7 +54,7 @@ int fill_grid(grid_t grid, char const *data)
     while ((c = data[char_counter++]) != '\0') {
 
         if (grid_index >= 81) {
-            printf("Warning: input contains redundant data, ignoring everythinf from '%c' at %ld.\n", c, char_counter - 1);
+            printf("Warning: input contains redundant data, ignoring everything from '%c' at %ld.\n", c, char_counter - 1);
             break;
         }
         if (c == '*') {
@@ -217,10 +227,6 @@ const char *const row_line = "+---+---+---+ +---+---+---+ +---+---+---+\n";
 
 void show_grid(grid_t grid)
 {
-    #ifdef HIDE_SOLUTONS
-    return;
-    #endif
-
     #ifdef COMPACT_SOLUTIONS
 
     for (size_t i = 0; i < 81; i++) {
