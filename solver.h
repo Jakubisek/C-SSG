@@ -10,7 +10,7 @@
     and perform a "fork" - add all the variants of the game into the solving stack effectively solving that tile.
 
     Next, take the top item of the stack and repeat this process until the stack is empty.
-    Whenever a grid is solved or it could be determined that the partial soution is incorect, it should
+    Whenever a grid is solved or it could be determined that the partial solution is incorrect, it should
     be immediately removed from the stack (in case it is validated as correct, solution should be displayed).
 */
 
@@ -25,24 +25,23 @@ typedef struct sudoku_game {
 } sgame_t;
 
 /*
-    Basic dynamically alocated stack that holds data about partially solved grids
+    Basic dynamically allocated stack that holds data about partially solved grids
     ordered by the number of forks it took to create them (the highest is on the top).
 */
 typedef struct solving_stack {
-    sgame_t **data_array; // holds unsolved grids
+    sgame_t data_array[INIT_SSTACK_SIZE]; // holds unsolved grids
     size_t item_count; // the number of items in data_array
-    size_t max_capacity; // the actual allocated size of data_array
 } sstack_t;
 
 /**
- * Initializes the solving stack through malloc() and in case of succeedes returns a pointer to it.
- * The size of the stack is explicitly difined as 729 and cannot be exceeded, since that is
+ * Initializes the solving stack through malloc() and in case of succeeds returns a pointer to it.
+ * The size of the stack is explicitly defined as 729 and cannot be exceeded, since that is
  * the maximum number of unsolved games that might be theoretically processed at the same time,
  * it is impossible to exceed this value.
  * 
  * @param data a string for the inital value in the stack (that can be parsed into grid_t)
  * @return A pointer to the solving stack or NULL if dynamic allocation failed.
- * @note INIT_SSTACK_SIZE = 729 because for every tile in grid (=81) thare can be at most 9 forks and 9*81 = 729,
+ * @note INIT_SSTACK_SIZE = 729 because for every tile in grid (=81) there can be at most 9 forks and 9*81 = 729,
  * @note the actual size of the solving stack should be less then 6 KB when empty
  */
 sstack_t *create_solving_stack(char const *data);
@@ -50,8 +49,8 @@ sstack_t *create_solving_stack(char const *data);
 
 /**
  * Solve the contents of the solving stack displaying all solutions found to stdout. If the number of solutions
- * found exceeds solution_limit, this function will preemtively end solving (meaning it is possible that not all
- * solutions were found). If this function ecounter a fatal memory failure (malloc() fails, used memory exceeds
+ * found exceeds solution_limit, this function will preemptively end solving (meaning it is possible that not all
+ * solutions were found). If this function encounter a fatal memory failure (malloc() fails, used memory exceeds
  * the set limit), the function will terminate by calling terminate_solving().
  * 
  * @param solving_stack a valid pointer to non-empty solving stack that can be resized by realloc()
@@ -62,7 +61,7 @@ int solve(sstack_t *solving_stack, size_t solution_limit);
 
 
 /**
- * Releases all alocated memory of the stack by calling free() on all the elemtent stored.
+ * Releases all allocated memory of the stack by calling free().
  * If exit status is set to a non-zero value, this function will call exit() with that value.
  * 
  * @param solving_stack a valid pointer to non-empty solving stack that can be release by calling free()
