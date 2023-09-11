@@ -27,7 +27,7 @@ int main(int argc, char const *argv[])
     size_t solution_limit = 3;
 
     if (argc == 3 && !parse_ulong(argv[1], &solution_limit)) {
-        printf("'%s' was not accepted as value for solution display limit - using default value instad.\n", argv[1]);
+        printf("'%s' was not accepted as value for solution display limit - using default value instead.\n", argv[1]);
     }
 
     sstack_t *solving_stack = create_solving_stack(argv[argc-1]);
@@ -37,7 +37,7 @@ int main(int argc, char const *argv[])
     }
 
     printf("Initial grid looks like this:\n");
-    show_grid(solving_stack->data_array[0]->game_data);
+    show_grid(solving_stack->data_array[0].game_data);
 
     printf("Solving...\n\n");
     solve(solving_stack, solution_limit);
