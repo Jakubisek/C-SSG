@@ -16,8 +16,10 @@ enum PART_TYPE {
     PART_COLUMN,
     PART_SQUARE
 };
-const char *const pt[] = {"row", "column", "square"};
+const char *const PART_TO_STR[] = {"row", "column", "square"};
 
+#define WARN_CLR "\033[31m"
+#define RESET_CLR "\033[0m"
 
 static void get_part(grid_t grid, tile_t **part, size_t index, enum PART_TYPE type)
 {
@@ -43,6 +45,16 @@ static size_t pos_from_part(enum PART_TYPE part_type, size_t index, size_t order
     return 27*(index / 3) + 3*(index % 3) + (order % 3) + 9*(order / 3);
 }
 
+static void show_redundant_input(char const *data, size_t ignore_from)
+{
+    size_t i = 0;
+    while (data[i] != '\0') {
+        if (i == ignore_from) printf(WARN_CLR);
+        putchar(data[i++]);
+    }
+    printf("%s\n\n", RESET_CLR);
+}
+
 
 int fill_grid(grid_t grid, char const *data)
 {
@@ -55,6 +67,8 @@ int fill_grid(grid_t grid, char const *data)
 
         if (grid_index >= 81) {
             printf("Warning: input contains redundant data, ignoring everything from '%c' at %ld.\n", c, char_counter - 1);
+            printf("The highlighted section should be removed (this will not change the output):\n");
+            show_redundant_input(data, char_counter - 1);
             break;
         }
         if (c == '*') {
@@ -188,7 +202,7 @@ bool grid_contains_errors(grid_t grid, bool explain_error)
     for (size_t i = 0; i < 81; i++) {
         if (grid[i] == TILE_ERROR) {
             if (!explain_error) return true;
-            printf("Grid contained duplicit values which were removed and marked with '!'.\n");
+            printf("Grid contained duplicate values which were removed and marked with '!'.\n");
             return true;
         }
     }
@@ -206,13 +220,13 @@ bool grid_contains_errors(grid_t grid, bool explain_error)
                 add_to_tile(&sum_tester, *part[j]);
                 if (!tile_is_solved(*part[j])) continue;
                 if (!remove_from_tile(&empty_tester, *part[j])) {
-                    printf("Could not complete %s %ld, pos %ld.\n", pt[part_type], i, j);
+                    printf("Could not complete %s %ld, pos %ld.\n", PART_TO_STR[part_type], i, j);
                     return true;
                 }
             }
             if ((sum_tester TILE_GET_SET) != (TILE_EMPTY TILE_GET_SET)) {
                 if (!explain_error) return true;
-                printf("Could not complete %s %ld, missing: ", pt[part_type], i);
+                printf("Could not complete %s %ld, missing: ", PART_TO_STR[part_type], i);
                 tile_t missing_tile = ((9 << 12) - (sum_tester TILE_GET_SUM)) | ((~sum_tester) TILE_GET_SET);
                 show_tile(missing_tile);
                 printf("%s %c\n", tile_is_solved(missing_tile) ? " aka" : "", tile_to_char(missing_tile));
