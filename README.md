@@ -24,7 +24,7 @@ This project was created for educational purposes and fun, if you are looking fo
    `74*56002*4801*82008*4270904*33*5165009*37*355006*832`
 
    > Some specific examples:<br>
-   > `*2` will be interpreted as 00 (this is unnecessary since the number of characters in the sequence remains the same) <br>
+   > `*2` will be interpreted as 00 (this is unnecessary, the number of characters remains the same) <br>
    > `1*32` will be interpreted as 10002 (only the first digit after the \* will be used) <br>
    > `*abc56` will be interpreted as 000006 (non-numeric characters will be ignored until the \* can be resolved) <br>
    > `*0` will be interpreted as 0000000000 (10 zeros) <br>
@@ -41,12 +41,12 @@ This project was created for educational purposes and fun, if you are looking fo
    ./cssg 5 74*56002*4801*82008*4270904*33*5165009*37*355006*832
    ```
 
-    With this the program will end the solving process if it finds more than 5 valid solutions. <br>
+    With this option, the program will end the solving process if it finds more than 5 valid solutions. <br>
 
    > if you use `0` as the solution limit, no solutions will be displayed, but the solving will not terminate until **all the valid solutions** are found, verified and counted,
    > this could take a long time with some inputs, so it might be necessary to interrupt the program
 
-5. Run the program and look for the message `(n) Solution was found and verified as correct - required m forks.`
+5. Run the program and look for the message(s) `(n) Solution was found and verified as correct - required m forks.` <br>
     What follows after this are the found solutions.
 
 ## Limitations and warnings
