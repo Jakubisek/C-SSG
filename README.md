@@ -46,7 +46,7 @@ This project was created for educational purposes and fun, if you are looking fo
    > if you use `0` as the solution limit, no solutions will be displayed, but the solving will not terminate until **all the valid solutions** are found, verified, and counted,
    > this could take a long time with some inputs, so it might be necessary to interrupt the program
 
-5. Run the program and look for the message(s) `(n) Solution was found and verified as correct - required m forks.` <br>
+5. Run the program and look for the message(s) <br> `(n) Solution was found and verified as correct - required m forks.` <br>
     What follows after this are the found solutions.
 
 ## Limitations and warnings
